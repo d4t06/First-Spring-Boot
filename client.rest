@@ -1,0 +1,31 @@
+###
+GET http://localhost:8080/api/categories
+
+###
+GET http://localhost:8080/api/students/1
+
+
+###
+GET http://localhost:8080/api/products/iphone-14-proxxc
+
+###
+POST http://localhost:8080/api/categories
+content-Type: application/json
+
+{
+    "category_name":"Mobile",
+    "category_ascii":"mobile"
+}
+
+
+
+###
+POST http://localhost:8080/api/products
+content-Type: application/json
+
+{
+    "product_name":"iPhone 14 Pro",
+    "product_ascii":"iphone-14-pro",
+    "category_ascii": "mobile",
+    "brand_ascii": "iphone"
+}   
