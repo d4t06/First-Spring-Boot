@@ -23,9 +23,15 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "products", uniqueConstraints = {
-        @UniqueConstraint(name = "product_unique", columnNames = "product_ascii")
-})
+@Table(
+        name = "products", 
+        uniqueConstraints = {
+            @UniqueConstraint(
+                name = "product_unique",
+                columnNames = "product_ascii"
+            )
+        }
+)
 public class Product implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "product_sequence")
@@ -41,14 +47,15 @@ public class Product implements Serializable {
     @Column(nullable = false)
     private String brand_ascii;
 
-    @Column(nullable = false)
-    private String category_ascii;
+    @Column(nullable = false, name = "category_id")
+    private Long category_id;
 
     @ManyToOne()
-    @JoinColumn(name = "category_ascii",
-     insertable = false,
-     updatable = false,
-     referencedColumnName = "category_ascii")
+    @JoinColumn(
+        name = "category_id",
+        insertable = false,
+        updatable = false
+    )
     private Category category;
 
     private String image_url;   

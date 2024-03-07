@@ -17,7 +17,7 @@ public class ProductDtoToProduct implements Converter<ProductDTO, Product> {
         product.setProduct_name(source.product_name());
         product.setProductAscii(source.product_ascii());
         product.setBrand_ascii(source.brand_ascii());
-        product.setCategory_ascii(source.category_ascii());
+        product.setCategory_id(source.category_id());
         product.setImage_url(source.image_url());
         product.setCur_price(source.cur_price());
 

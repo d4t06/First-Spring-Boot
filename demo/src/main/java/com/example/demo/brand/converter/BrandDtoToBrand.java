@@ -1,10 +1,13 @@
 package com.example.demo.brand.converter;
 
 import org.springframework.core.convert.converter.Converter;
+import org.springframework.stereotype.Component;
 
 import com.example.demo.brand.dto.BrandDto;
 import com.example.demo.brand.entity.Brand;
 
+
+@Component
 public class BrandDtoToBrand implements Converter<BrandDto, Brand> {
 
    @Override
@@ -13,7 +16,7 @@ public class BrandDtoToBrand implements Converter<BrandDto, Brand> {
 
       brand.setBrand_ascii(source.brand_ascii());
       brand.setBrand_name(source.brand_name());
-      brand.setCategoryAscii(source.category_ascii());
+      brand.setCategory_id(source.category_id());
 
       return brand;
    }

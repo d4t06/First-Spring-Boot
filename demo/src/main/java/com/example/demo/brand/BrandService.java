@@ -1,11 +1,10 @@
 package com.example.demo.brand;
 
 import org.springframework.stereotype.Service;
-
 import com.example.demo.brand.converter.BrandDtoToBrand;
 import com.example.demo.brand.dto.BrandDto;
-import com.example.demo.brand.dto.UpdateBrandDto;
 import com.example.demo.brand.entity.Brand;
+import com.example.demo.system.exception.ObjectNotFoundException;
 
 @Service
 public class BrandService {
@@ -27,15 +26,25 @@ public class BrandService {
       return this.brandRepository.save(brand);
    }
 
-   public Brand update(String brand_ascii, BrandDto brandDto) {
-      Brand newBrand = this.brandDtoToBrand.convert(brandDto);
-      Brand oldBrand = this.brandRepository.findByBrandAscii(brand_ascii).get(0);
+   public Brand update(Long id, BrandDto brandDto) {
 
-      oldBrand.setBrand_ascii(newBrand.getBrand_ascii());
-      oldBrand.setBrand_name(newBrand.getBrand_name());
-      oldBrand.setCategoryAscii(newBrand.getCategoryAscii());
+      return this.brandRepository.findById(id)
+            .map(oldBrand -> {
+              oldBrand.setBrand_ascii(brandDto.brand_ascii());
+              oldBrand.setBrand_name(brandDto.brand_name());
+              oldBrand.setCategory_id(brandDto.category_id());
 
-      return this.brandRepository.save(oldBrand);
+               Brand updatedBrand = this.brandRepository.save(oldBrand);
+               return updatedBrand;
+            })
+            .orElseThrow(() -> new ObjectNotFoundException("Brand not found"));
    }
+
+   public void delete(Long id) {
+      this.brandRepository.findById(id)
+              .orElseThrow(() -> new ObjectNotFoundException("Brand not found"));
+
+      this.brandRepository.deleteById(id);
+  }
 
 }

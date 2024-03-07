@@ -11,17 +11,17 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-
-import com.example.demo.category.exception.CategoryNotFoundException;
 import com.example.demo.system.MyResponse;
 
 @RestControllerAdvice
 public class ExceptionHandlerAdvice {
 
-    @ExceptionHandler(CategoryNotFoundException.class)
+
+
+    @ExceptionHandler(ObjectNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    MyResponse handleCategoryNotFoundException(CategoryNotFoundException ex) {
-        return new MyResponse(false,"bla bla", HttpStatus.NOT_FOUND.value());
+    MyResponse handleProductNotFoundException(ObjectNotFoundException ex) {
+        return new MyResponse(false,ex.getMessage(), HttpStatus.NOT_FOUND.value());
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

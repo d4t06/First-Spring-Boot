@@ -4,6 +4,7 @@ import com.example.demo.category.entity.Category;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -31,15 +32,14 @@ public class Brand {
    @Column(nullable = false, unique = true)
    private String brand_ascii;
 
-   @Column(nullable = false, name = "brand_ascii")
-   private String categoryAscii;
+   @Column(nullable = false)
+   private Long category_id;
 
-   @ManyToOne()
+   @ManyToOne(fetch = FetchType.LAZY)
    @JoinColumn(
-      name = "category_ascii", 
-      insertable = false,
-      updatable = false,
-      referencedColumnName = "category_ascii"
+      name = "category_id",
+      insertable = false,  
+      updatable = false
    )
    private Category category;
 }

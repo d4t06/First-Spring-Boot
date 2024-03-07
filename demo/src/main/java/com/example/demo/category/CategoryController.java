@@ -1,11 +1,12 @@
 package com.example.demo.category;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import com.example.demo.category.converter.CategoryDtoToCategory;
+import com.example.demo.category.converter.CategoryToCategoryDto;
 import com.example.demo.category.dto.CategoryDto;
 import com.example.demo.category.entity.Category;
 import com.example.demo.system.MyResponse;
@@ -16,65 +17,57 @@ public class CategoryController {
 
     private final CategoryService categoryService;
 
-    public CategoryController(CategoryService categoryService) {
+    private final CategoryToCategoryDto categoryToCategoryDto;
+
+    public CategoryController(
+            CategoryService categoryService,
+            CategoryToCategoryDto categoryToCategoryDto) {
 
         this.categoryService = categoryService;
+        this.categoryToCategoryDto = categoryToCategoryDto;
     }
 
     @GetMapping()
-    public ResponseEntity<?> findAll() {
-        try {
-            // Repository Layer
-            // return new ResponseEntity<>("GetAll Results", HttpStatus.OK);
-            List<Category> categories = this.categoryService.findAll();
+    public MyResponse findAll() {
+        List<Category> categories = this.categoryService.findAll();
 
-            if (categories.isEmpty())
-                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-
-            return new ResponseEntity<>(categories, HttpStatus.OK);
-
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        List<CategoryDto> categoryDtos = new ArrayList<>();
+        for (Category category : categories) {
+            CategoryDto categoryDto = this.categoryToCategoryDto.convert(category);
+            categoryDtos.add(categoryDto);
         }
+        return new MyResponse(true, "Get all category successful", 200, categoryDtos);
     }
 
-    @GetMapping("/{category_ascii}")
-    public ResponseEntity<?> find(@PathVariable String category_ascii) {
-        try {
-            // Repository Layer
-            return this.categoryService.findOne(category_ascii);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+    @GetMapping("/{id}")
+    public MyResponse find(@PathVariable Long id) {
+        Category category = this.categoryService.findOne(id);
+
+        return new MyResponse(true, "Get category successful", 200, category);
     }
 
     @PostMapping()
     public MyResponse create(@RequestBody CategoryDto dto) {
-        try {
-            Category category = this.categoryService.create(dto);
-            return new MyResponse(true,"Add successfull", 200, category);
+        Category category = this.categoryService.create(dto);
 
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return new MyResponse(false, e.getMessage(), 500);
-        }
+        return new MyResponse(true, "Add successful", 200, category);
     }
 
     @PutMapping()
-    public ResponseEntity<?> update(@RequestBody CategoryDto dto) {
-        try {
-            return new ResponseEntity<>("Update Result", HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+    public MyResponse update(
+            @RequestBody CategoryDto updateDto,
+            @PathVariable Long id) {
+
+        Category category = this.categoryService.update(id, updateDto);
+
+        return new MyResponse(true, "Update successful", 200, category);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> delete(@PathVariable Integer id) {
-        try {
-            return new ResponseEntity<>("Destroy Result", HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+    public MyResponse delete(
+            @PathVariable Long id) {
+
+        this.categoryService.delete(id);
+        return new MyResponse(true, "Delete successful", 200);
     }
 }

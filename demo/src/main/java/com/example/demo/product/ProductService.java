@@ -4,10 +4,10 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import com.example.demo.category.exception.CategoryNotFoundException;
 import com.example.demo.product.converter.ProductDtoToProduct;
 import com.example.demo.product.dto.ProductDTO;
 import com.example.demo.product.entity.Product;
+import com.example.demo.system.exception.ObjectNotFoundException;
 
 @Service
 public class ProductService {
@@ -24,15 +24,18 @@ public class ProductService {
     }
 
     public List<Product> findAll() {
-        return this.productRepository.findAll();
+        List<Product> products = this.productRepository.findAll();
+        if (products.isEmpty())
+            throw new ObjectNotFoundException("Product not found");
+
+        return products;
     }
 
     public Product findOne(String product_ascii) {
         List<Product> products = this.productRepository.findByProductAscii(product_ascii);
 
         if (products.size() != 1)
-            throw new CategoryNotFoundException("akdsjfkljsad");
-
+            throw new ObjectNotFoundException("Product not found");
         return products.get(0);
 
     }
@@ -42,11 +45,28 @@ public class ProductService {
         return this.productRepository.save(product);
     }
 
-    public void update(String product_ascii) {
-        Product oldProduct = this.productRepository.findByProductAscii(product_ascii).get(0);
+    public Product update(Long id, ProductDTO updateDto) {
+        return this.productRepository.findById(id)
+                .map(oldProduct -> {
+                    oldProduct.setBrand_ascii(updateDto.brand_ascii());
+                    oldProduct.setCategory_id(updateDto.category_id());
+                    oldProduct.setProductAscii(updateDto.product_ascii());
+                    oldProduct.setProduct_name(updateDto.product_name());
+                    oldProduct.setImage_url(updateDto.image_url());
+                    oldProduct.setCur_price(updateDto.cur_price());
 
+                    Product product = this.productRepository.save(oldProduct);
+                    return product;
+                })
+                .orElseThrow(() -> new ObjectNotFoundException("Product not found"));
 
+    }
 
+    public void delete(Long id) {
+        this.productRepository.findById(id)
+                .orElseThrow(() -> new ObjectNotFoundException("Product not found"));
+
+        this.productRepository.deleteById(id);
     }
 
 }

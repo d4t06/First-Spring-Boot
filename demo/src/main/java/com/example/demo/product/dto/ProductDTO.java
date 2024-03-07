@@ -1,5 +1,4 @@
 package com.example.demo.product.dto;
-import io.micrometer.common.lang.NonNull;
 import jakarta.validation.constraints.NotEmpty;
 
 public record ProductDTO(
@@ -10,7 +9,7 @@ public record ProductDTO(
           String product_ascii,
           
           @NotEmpty(message = "category is required")
-          String category_ascii,
+          Long category_id,
           
           @NotEmpty(message = "brand is required")
           String brand_ascii,
