@@ -24,7 +24,6 @@ public class CategoryController {
     @GetMapping()
     public ResponseEntity<?> findAll() {
         try {
-            // TODO Implement Your Logic To Get Data From Service Layer Or Directly From
             // Repository Layer
             // return new ResponseEntity<>("GetAll Results", HttpStatus.OK);
             List<Category> categories = this.categoryService.findAll();
@@ -42,7 +41,6 @@ public class CategoryController {
     @GetMapping("/{category_ascii}")
     public ResponseEntity<?> find(@PathVariable String category_ascii) {
         try {
-            // TODO Implement Your Logic To Get Data From Service Layer Or Directly From
             // Repository Layer
             return this.categoryService.findOne(category_ascii);
         } catch (Exception e) {
@@ -53,8 +51,6 @@ public class CategoryController {
     @PostMapping()
     public MyResponse create(@RequestBody CategoryDto dto) {
         try {
-            // TODO Implement Your Logic To Save Data And Return Result Through
-            // ResponseEntity
             Category category = this.categoryService.create(dto);
             return new MyResponse(true,"Add successfull", 200, category);
 
@@ -67,8 +63,6 @@ public class CategoryController {
     @PutMapping()
     public ResponseEntity<?> update(@RequestBody CategoryDto dto) {
         try {
-            // TODO Implement Your Logic To Update Data And Return Result Through
-            // ResponseEntity
             return new ResponseEntity<>("Update Result", HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -78,8 +72,6 @@ public class CategoryController {
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable Integer id) {
         try {
-            // TODO Implement Your Logic To Destroy Data And Return Result Through
-            // ResponseEntity
             return new ResponseEntity<>("Destroy Result", HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
