@@ -4,11 +4,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.security.auth.login.CredentialNotFoundException;
-
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.oauth2.server.resource.InvalidBearerTokenException;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -51,5 +51,37 @@ public class ExceptionHandlerAdvice {
         });
 
         return new MyResponse(false, "Provided arguments are invalid", HttpStatus.BAD_REQUEST.value(), map);
+    }
+
+    // ACCESS DENIED
+    @ExceptionHandler({
+        AccessDeniedException.class,
+    })
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    MyResponse AccessDeniedException(AccessDeniedException ex) {
+        return new MyResponse(false, "Then access token provided is expired, revoked", HttpStatus.FORBIDDEN.value(), ex.getMessage());
+    }
+
+    // INVALID TOKEN
+    @ExceptionHandler({
+        InvalidBearerTokenException.class,
+    })
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    MyResponse InvalidTokenException(Exception ex) {
+        return new MyResponse(false, "Then access token provided is expired, revoked, malformed or invalids for other reasons", HttpStatus.UNAUTHORIZED.value());
+    }
+
+    /**
+     * Fallback handles any unhandled exceptions.
+     * @param ex
+     * @return
+     */
+
+    @ExceptionHandler({
+        Exception.class,
+    })
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    MyResponse HandleOtherException(Exception ex) {
+        return new MyResponse(false, "A server internal error occurs", HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
 }

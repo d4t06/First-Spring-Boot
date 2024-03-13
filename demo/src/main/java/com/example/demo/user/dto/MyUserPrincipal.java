@@ -1,6 +1,5 @@
 package com.example.demo.user.dto;
 
-import org.hibernate.mapping.Array;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;

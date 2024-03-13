@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.springframework.web.bind.annotation.*;
 
-import com.example.demo.category.converter.CategoryDtoToCategory;
 import com.example.demo.category.converter.CategoryToCategoryDto;
 import com.example.demo.category.dto.CategoryDto;
 import com.example.demo.category.entity.Category;

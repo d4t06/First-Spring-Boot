@@ -3,6 +3,7 @@ GET http://localhost:8080/api/categories
 
 ###
 GET http://localhost:8080/api/products
+Authorization: Bearer eyJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJzZWxmIiwic3ViIjoiZGF0bmgiLCJleHAiOjE3MTAzMjQzMDAsImlhdCI6MTcxMDMxNzEwMCwiYXV0aG9yaXRpZXMiOiJST0xFX1VTRVIifQ.WHY9CodYMugHt_lZCl51XGU2NegdwxKKhhPt1DEQLpjUlgqKnhFjasmEQz58i6VSYsm6rcyZ9CYN4AO8RA4JsFaseM4SD8HFEAOUHLyvsmG8Y5cxKlLmz0lX9j52T8tJrQqwnss5Gl7qhT5WqpZfKgWDY4Bilq2cTFTMLKATDfxX21TkU9WfM3wuu-v-kWClwT6y5XEee4crRcnZttXKS92N3C9fqy8oZsKqcGdD4R2ik-VfZx4OEnvG8nWFlUQL9AyU5tt1ekZL6Rf5Rg37lsWHxrBnoIHNPUq8NrMSgvRTNG0bd9wZuedcbSDXZTXI_LdQRHnPqJ805NC_hIyy7g
 
 ###
 GET http://localhost:8080/api/products/iphone-14-pro
@@ -30,6 +31,7 @@ content-Type: application/json
 PUT http://localhost:8080/api/products/1
 content-Type: application/json
 
+
 {
 
     "product_name": "iPhone 14 Pro",
@@ -41,6 +43,10 @@ content-Type: application/json
     "installment": false
 }
 
+
+###
+DELETE http://localhost:8080/api/products/1
+Authorization: Bearer eyJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJzZWxmIiwic3ViIjoiZGF0bmgiLCJleHAiOjE3MTAzMjQzMDAsImlhdCI6MTcxMDMxNzEwMCwiYXV0aG9yaXRpZXMiOiJST0xFX1VTRVIifQ.WHY9CodYMugHt_lZCl51XGU2NegdwxKKhhPt1DEQLpjUlgqKnhFjasmEQz58i6VSYsm6rcyZ9CYN4AO8RA4JsFaseM4SD8HFEAOUHLyvsmG8Y5cxKlLmz0lX9j52T8tJrQqwnss5Gl7qhT5WqpZfKgWDY4Bilq2cTFTMLKATDfxX21TkU9WfM3wuu-v-kWClwT6y5XEee4crRcnZttXKS92N3C9fqy8oZsKqcGdD4R2ik-VfZx4OEnvG8nWFlUQL9AyU5tt1ekZL6Rf5Rg37lsWHxrBnoIHNPUq8NrMSgvRTNG0bd9wZuedcbSDXZTXI_LdQRHnPqJ805NC_hIyy7g
 
 
 
@@ -69,12 +75,12 @@ GET http://localhost:8080/api/auth1
 GET http://localhost:8080/api/auth/refresh
 
 ###
-POST http://localhost:8080/api/auth1/register
+POST http://localhost:8080/api/auth/register
 content-Type: application/json
 
 {
-    "username":"test",
-    "password":"datnh"
+    "username":"admin",
+    "password":"admin"
 }
 
 ###
@@ -82,7 +88,7 @@ POST http://localhost:8080/api/auth/login
 content-Type: application/json
 
 {
-    "username":"test",
+    "username":"datnh",
     "password":"datnh"
 }
 
