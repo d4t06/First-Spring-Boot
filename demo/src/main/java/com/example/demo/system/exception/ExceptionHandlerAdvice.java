@@ -4,7 +4,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.security.auth.login.CredentialNotFoundException;
+
 import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -15,15 +19,25 @@ import com.example.demo.system.MyResponse;
 
 @RestControllerAdvice
 public class ExceptionHandlerAdvice {
-
-
-
+    // NOT FOUND
     @ExceptionHandler(ObjectNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     MyResponse handleProductNotFoundException(ObjectNotFoundException ex) {
-        return new MyResponse(false,ex.getMessage(), HttpStatus.NOT_FOUND.value());
+        return new MyResponse(false, ex.getMessage(), HttpStatus.NOT_FOUND.value());
     }
 
+    // UNAUTHORIZED
+    @ExceptionHandler({
+            UsernameNotFoundException.class,
+            BadCredentialsException.class,
+
+    })
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    MyResponse UnauthorizedException(Exception ex) {
+        return new MyResponse(false, "username of password is not correct", HttpStatus.UNAUTHORIZED.value());
+    }
+
+    // DTO VALIDATION
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     MyResponse handleValidationException(MethodArgumentNotValidException ex) {

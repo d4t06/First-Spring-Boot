@@ -4,6 +4,8 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 
 public record BrandDto(
+   Long id,
+
    @NotEmpty(message = "name is required")
    String brand_name,
 

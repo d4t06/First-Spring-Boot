@@ -5,15 +5,15 @@ GET http://localhost:8080/api/categories
 GET http://localhost:8080/api/products
 
 ###
-GET http://localhost:8080/api/products/iphone-14-proxxc
+GET http://localhost:8080/api/products/iphone-14-pro
 
 ###
 POST http://localhost:8080/api/categories
 content-Type: application/json
 
 {
-    "category_name":"Mobile",
-    "category_ascii":"mobile"
+    "category_name":"Laptop",
+    "category_ascii":"laptop"
 }
 
 ###
@@ -26,6 +26,20 @@ content-Type: application/json
     "category_id":"1"
 }
 
+###
+PUT http://localhost:8080/api/products/1
+content-Type: application/json
+
+{
+
+    "product_name": "iPhone 14 Pro",
+    "product_ascii": "iphone-14-pro",
+    "category_id": 1,
+    "brand_id": 2,
+    "image_url": "http://res.cloudinary.com/dalg3ayqh/image/upload/v1709779286/hd-mobile/v7qwibrsujgj82xwkdfv.jpg",
+    "price": 23890000,
+    "installment": false
+}
 
 
 
@@ -37,6 +51,38 @@ content-Type: application/json
 {
     "product_name":"iPhone 14 Pro",
     "product_ascii":"iphone-14-pro",
-    "category_ascii": "mobile",
-    "brand_ascii": "iphone"
+    "category_id": "1",
+    "brand_id":"2",
+    "price": "23890000"
 }   
+
+
+###
+DELETE http://localhost:8080/api/products/1
+
+
+###
+GET http://localhost:8080/api/auth1
+
+
+###
+GET http://localhost:8080/api/auth/refresh
+
+###
+POST http://localhost:8080/api/auth1/register
+content-Type: application/json
+
+{
+    "username":"test",
+    "password":"datnh"
+}
+
+###
+POST http://localhost:8080/api/auth/login
+content-Type: application/json
+
+{
+    "username":"test",
+    "password":"datnh"
+}
+

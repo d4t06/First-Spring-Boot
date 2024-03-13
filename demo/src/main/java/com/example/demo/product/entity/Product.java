@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+
+import com.example.demo.brand.entity.Brand;
 import com.example.demo.category.entity.Category;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -23,15 +25,9 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(
-        name = "products", 
-        uniqueConstraints = {
-            @UniqueConstraint(
-                name = "product_unique",
-                columnNames = "product_ascii"
-            )
-        }
-)
+@Table(name = "products", uniqueConstraints = {
+        @UniqueConstraint(name = "product_unique", columnNames = "product_ascii")
+})
 public class Product implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "product_sequence")
@@ -44,24 +40,26 @@ public class Product implements Serializable {
     @Column(nullable = false, name = "product_ascii")
     private String productAscii;
 
+    private String image_url;
     @Column(nullable = false)
-    private String brand_ascii;
+    private int price;
+    private Boolean installment;
 
+    // *********
     @Column(nullable = false, name = "category_id")
-    private Long category_id;
+    private Long categoryId;
 
     @ManyToOne()
-    @JoinColumn(
-        name = "category_id",
-        insertable = false,
-        updatable = false
-    )
+    @JoinColumn(name = "category_id", insertable = false, updatable = false)
     private Category category;
 
-    private String image_url;   
-    private String old_price;
-    private int cur_price;
-    private String installment;
+    // *********
+    @Column(nullable = false, name = "brand_id")
+    private Long brandId;
+
+    @ManyToOne()
+    @JoinColumn(name = "brand_id", insertable = false, updatable = false)
+    private Brand brand;
 
     @CreationTimestamp
     private LocalDateTime created_at;

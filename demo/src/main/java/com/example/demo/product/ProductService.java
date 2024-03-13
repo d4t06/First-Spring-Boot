@@ -1,5 +1,6 @@
 package com.example.demo.product;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -25,6 +26,7 @@ public class ProductService {
 
     public List<Product> findAll() {
         List<Product> products = this.productRepository.findAll();
+
         if (products.isEmpty())
             throw new ObjectNotFoundException("Product not found");
 
@@ -48,12 +50,12 @@ public class ProductService {
     public Product update(Long id, ProductDTO updateDto) {
         return this.productRepository.findById(id)
                 .map(oldProduct -> {
-                    oldProduct.setBrand_ascii(updateDto.brand_ascii());
-                    oldProduct.setCategory_id(updateDto.category_id());
+                    oldProduct.setBrandId(updateDto.brand_id());
+                    oldProduct.setCategoryId(updateDto.category_id());
                     oldProduct.setProductAscii(updateDto.product_ascii());
                     oldProduct.setProduct_name(updateDto.product_name());
                     oldProduct.setImage_url(updateDto.image_url());
-                    oldProduct.setCur_price(updateDto.cur_price());
+                    oldProduct.setPrice(updateDto.price());
 
                     Product product = this.productRepository.save(oldProduct);
                     return product;
