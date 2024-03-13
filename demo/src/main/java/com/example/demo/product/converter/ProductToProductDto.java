@@ -13,12 +13,14 @@ public class ProductToProductDto implements Converter<Product, ProductDTO> {
     @Override
     public ProductDTO convert(Product source) {
         ProductDTO productDto = new ProductDTO(
+                source.getId(),
                 source.getProduct_name(),
                 source.getProductAscii(),
-                source.getCategory_id(),
-                source.getBrand_ascii(),
+                source.getCategoryId(),
+                source.getBrandId(),
                 source.getImage_url(),
-                source.getCur_price()
+                source.getPrice(),
+                source.getInstallment()
         );
 
         return productDto;
