@@ -4,36 +4,30 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import com.example.demo.security.JwtProvider;
 import com.example.demo.system.MyResponse;
 import com.example.demo.user.UserService;
 import com.example.demo.user.dto.MyUserPrincipal;
+import com.example.demo.user.dto.ResponseUserDto;
 import com.example.demo.user.dto.UserDto;
 import com.example.demo.user.entity.User;
 
 @Service
 public class AuthService {
 
+
+    private final JwtProvider jwtProvider;
+
     private final UserService userService;
 
-    public AuthService(UserService userService) {
+    public AuthService(
+        JwtProvider jwtProvider,
+        UserService userService) {
         this.userService = userService;
-    }
-
-    public User login(UserDto userDto) {
-        User foundedUser = this.userService.findOne(userDto.username());
-
-        if (foundedUser == null)
-            throw new UsernameNotFoundException("");
-
-        if (foundedUser.getPassword() != userDto.password())
-            throw new BadCredentialsException("");
-
-        return foundedUser;
+        this.jwtProvider = jwtProvider;
     }
 
     public MyResponse register(UserDto userDto) {
@@ -50,8 +44,8 @@ public class AuthService {
         MyUserPrincipal principal = (MyUserPrincipal) authentication.getPrincipal();
 
         
-        UserDto userDto = new UserDto(principal.getUser().getId(), principal.getUsername(), null, principal.getUser().getRole());
-        String token = "";
+        ResponseUserDto userDto = new ResponseUserDto(principal.getUsername(), principal.getUser().getRole());
+        String token = this.jwtProvider.generateToken(authentication);
         Map<String, Object> resultMap = new HashMap<>();
 
         resultMap.put("userInfo", userDto);

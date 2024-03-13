@@ -1,6 +1,5 @@
 package com.example.demo.user;
 
-import java.util.List;
 import java.util.Optional;
 
 import org.springframework.security.core.userdetails.UserDetails;
@@ -15,6 +14,7 @@ import com.example.demo.user.dto.UserDto;
 import com.example.demo.user.entity.User;
 
 @Service
+// implement UserDetailService is default server of spring boot security
 public class UserService implements UserDetailsService {
 
     private final UserRepository userRepository;
@@ -22,6 +22,7 @@ public class UserService implements UserDetailsService {
     private final PasswordEncoder passwordEncoder;
 
     @Override
+    // override method loadUserByUsername and return myUserPrincipal (implement UserDetails)
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
         System.out.println(">>> run loadUserByUsername and return UserPrincipal");
@@ -30,7 +31,7 @@ public class UserService implements UserDetailsService {
                 .map(user -> new MyUserPrincipal(user))
                 .orElseThrow(() -> new UsernameNotFoundException("Username not found"));
 
-        System.out.println(">>> check user detail" + userDetails);
+        System.out.println(">>> check user detail: " + userDetails);
 
         return userDetails;
     }
