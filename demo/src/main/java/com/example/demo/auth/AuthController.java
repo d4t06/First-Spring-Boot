@@ -41,7 +41,7 @@ public class AuthController {
         // set authentication for spring secure 
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        Map<String, Object> userRes = this.authService.createLoginInfo(authentication);
+        Map<String, Object> userRes = this.authService.handleLogin(authentication);
 
         return new MyResponse(true, "Login successful" + authentication.getName(), 200, userRes);
     }

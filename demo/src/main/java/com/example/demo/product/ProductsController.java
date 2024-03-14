@@ -3,6 +3,7 @@ package com.example.demo.product;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import com.example.demo.product.converter.ProductToProductDto;
@@ -46,6 +47,7 @@ public class ProductsController {
     }
 
     @PostMapping()
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public MyResponse create(@Valid @RequestBody ProductDTO createProductDTO) {
         Product product = this.productService.create(createProductDTO);
 
@@ -53,6 +55,7 @@ public class ProductsController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public MyResponse update(
             @PathVariable Long id,
             @RequestBody ProductDTO updateDto) {
@@ -63,6 +66,7 @@ public class ProductsController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public MyResponse delete(
             @PathVariable Long id) {
 

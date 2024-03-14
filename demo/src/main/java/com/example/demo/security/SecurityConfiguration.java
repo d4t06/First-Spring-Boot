@@ -12,6 +12,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -35,6 +36,7 @@ import com.nimbusds.jose.proc.SecurityContext;
 import org.springframework.security.authentication.AuthenticationManager;
 
 @Configuration
+@EnableMethodSecurity
 public class SecurityConfiguration {
 
     private final RSAPublicKey publicKey;
@@ -70,20 +72,22 @@ public class SecurityConfiguration {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
-                .authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests
-                        .requestMatchers(HttpMethod.POST, "/products/**").hasAuthority("ROLE_ADMIN")
-                        .requestMatchers(HttpMethod.DELETE, "/products/**").hasAnyAuthority("ROLE_ADMIN")
-                        .requestMatchers(HttpMethod.PUT, "/products/**").hasAuthority("ROLE_ADMIN")
+                .authorizeHttpRequests(req -> req
+                        // .requestMatchers(HttpMethod.POST, "/products/**").hasAuthority("ROLE_ADMIN")
+                        // .requestMatchers(HttpMethod.DELETE, "/products/**").hasAnyAuthority("ROLE_ADMIN")
+                        // .requestMatchers(HttpMethod.PUT, "/products/**").hasAuthority("ROLE_ADMIN")
 
-                        .requestMatchers(HttpMethod.POST, "/category/**").hasAuthority("ROLE_ADMIN")
-                        .requestMatchers(HttpMethod.DELETE, "/category/**").hasAuthority("ROLE_ADMIN")
-                        .requestMatchers(HttpMethod.PUT, "/category/**").hasAuthority("ROLE_ADMIN")
-                        .requestMatchers(AntPathRequestMatcher.antMatcher("/auth/*")).permitAll()
-                        .anyRequest().authenticated())
+                        // .requestMatchers(HttpMethod.POST, "/category/**").hasAuthority("ROLE_ADMIN")
+                        // .requestMatchers(HttpMethod.DELETE, "/category/**").hasAuthority("ROLE_ADMIN")
+                        // .requestMatchers(HttpMethod.PUT, "/category/**").hasAuthority("ROLE_ADMIN")
+                        // .requestMatchers(AntPathRequestMatcher.antMatcher("/auth/*")).permitAll()
+                        .anyRequest().permitAll()
+                )
                 .csrf(csrf -> csrf.disable())
                 .httpBasic(httpBasic -> httpBasic.authenticationEntryPoint(this.customAuthenticationEntryPoint))
                 .oauth2ResourceServer(oauth2ResourceServer -> oauth2ResourceServer
                     .jwt(customer -> customer.jwtAuthenticationConverter((this.jwtAuthenticationConverter())))
+                    // .jwt(Customizer.withDefaults())
                     .authenticationEntryPoint(this.customTokenAuthenticationEntryPoint)
                     .accessDeniedHandler(this.customTokenAccessDeniedEntryPoint)
                 )

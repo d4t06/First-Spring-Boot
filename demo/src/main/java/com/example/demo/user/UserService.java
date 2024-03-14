@@ -22,7 +22,8 @@ public class UserService implements UserDetailsService {
     private final PasswordEncoder passwordEncoder;
 
     @Override
-    // override method loadUserByUsername and return myUserPrincipal (implement UserDetails)
+    // override method loadUserByUsername and return myUserPrincipal (implement
+    // UserDetails)
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
         System.out.println(">>> run loadUserByUsername and return UserPrincipal");
@@ -59,6 +60,15 @@ public class UserService implements UserDetailsService {
         user.setPassword(this.passwordEncoder.encode(userDto.password()));
 
         return this.userRepository.save(user);
+    }
+
+    public void updateRefreshToken(String refreshToken, String username) {
+        User user = this.findOne(username);
+
+        user.setRefreshToken(refreshToken);
+
+        this.userRepository.save(user);
+
     }
 
 }

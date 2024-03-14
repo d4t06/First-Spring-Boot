@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -15,6 +16,9 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.servlet.NoHandlerFoundException;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
+
 import com.example.demo.system.MyResponse;
 
 @RestControllerAdvice
@@ -34,7 +38,7 @@ public class ExceptionHandlerAdvice {
     })
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     MyResponse UnauthorizedException(Exception ex) {
-        return new MyResponse(false, "username of password is not correct", HttpStatus.UNAUTHORIZED.value());
+        return new MyResponse(false, "username or password is not correct", HttpStatus.UNAUTHORIZED.value());
     }
 
     // DTO VALIDATION
@@ -55,30 +59,43 @@ public class ExceptionHandlerAdvice {
 
     // ACCESS DENIED
     @ExceptionHandler({
-        AccessDeniedException.class,
+            AccessDeniedException.class,
     })
     @ResponseStatus(HttpStatus.FORBIDDEN)
     MyResponse AccessDeniedException(AccessDeniedException ex) {
-        return new MyResponse(false, "Then access token provided is expired, revoked", HttpStatus.FORBIDDEN.value(), ex.getMessage());
+        return new MyResponse(false, "Insufficient privilege or the access token provided is expired, revoked ",
+                HttpStatus.FORBIDDEN.value(), ex.getMessage());
     }
 
     // INVALID TOKEN
     @ExceptionHandler({
-        InvalidBearerTokenException.class,
+            InvalidBearerTokenException.class,
     })
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     MyResponse InvalidTokenException(Exception ex) {
-        return new MyResponse(false, "Then access token provided is expired, revoked, malformed or invalids for other reasons", HttpStatus.UNAUTHORIZED.value());
+        return new MyResponse(false,
+                "The access token provided is expired, revoked, malformed or invalid for other reasons",
+                HttpStatus.UNAUTHORIZED.value());
+    }
+
+    // NOT FOUND RESOURCE
+    @ExceptionHandler({
+            NoResourceFoundException.class,
+    })
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    MyResponse NotFoundEndPoint(Exception ex) {
+        return new MyResponse(false, "The resource not found", HttpStatus.NOT_FOUND.value());
     }
 
     /**
-     * Fallback handles any unhandled exceptions.
+     * Fallback handles all unhandled exceptions.
+     * 
      * @param ex
      * @return
      */
 
     @ExceptionHandler({
-        Exception.class,
+            Exception.class,
     })
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     MyResponse HandleOtherException(Exception ex) {

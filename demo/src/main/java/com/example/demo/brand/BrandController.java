@@ -9,6 +9,7 @@ import com.example.demo.system.MyResponse;
 
 import jakarta.validation.Valid;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 @RestController()
 @RequestMapping("/brands")
+@PreAuthorize("hasAuthority('ROLE_ADMIN')")
 public class BrandController {
 
    private final BrandService brandService;

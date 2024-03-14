@@ -29,8 +29,14 @@ public class User {
     @Column(unique = true, nullable = false)
     String username;
 
+    @Column(nullable = false)
     String password;
+
+    @Column(nullable = false)
     String role;
+
+    @Column(nullable = false, length = 400)
+    String refreshToken;
 
     @CreationTimestamp
     private LocalDateTime created_at;

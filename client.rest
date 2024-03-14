@@ -3,35 +3,41 @@ GET http://localhost:8080/api/categories
 
 ###
 GET http://localhost:8080/api/products
-Authorization: Bearer eyJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJzZWxmIiwic3ViIjoiYWRtaW4iLCJleHAiOjE3MTAzNTQyNzgsImlhdCI6MTcxMDM0NzA3OCwiYXV0aG9yaXRpZXMiOiJST0xFX0FETUlOUk9MRV9VU0VSIn0.J7xE0tsBJjT-qUcmyj3dFrAjEHj7RdnYJeicz1JVL-_hiGB433KVVkiHxJL9MEEFmHlFvkteCWwpFS1WhN9rSToiq1XTYlfDdEngNUs9Z2xauzCydCHcKb1E6xXtFgRSs_pJ08BiJ3KTao10Hg2NiLZB1wQ3jn3a_yuQtLAEUa7wNhysZu321UN6FVqUW7lJtUQBEDrzfHANwYQqjS-9lXrmVVGEDOD2iCIeTsO4bFm-_tMgkaAWyKRCSbdjEoKZvx387jPZknEOxDNUtgThbVHvGnSwGbE0h8L4SWTI22E0_o4dd3GCYrxbJbkqF7xltrYfNGnp8aix1L_D2tVIxA
-
 
 ###
-GET http://localhost:8080/api/products/iphone-14-pro
+GET http://localhost:8080/api/products/iphone-15-pro
 
 ###
 POST http://localhost:8080/api/categories
+# Authorization: Bearer eyJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJzZWxmIiwic3ViIjoiZGF0bmgiLCJleHAiOjE3MTExMDM4NzQsImlhdCI6MTcxMDM4Mzg3NCwiYXV0aG9yaXRpZXMiOiJST0xFX0FETUlOIn0.KbA-f-1w63aUZ7_xV0iu2nO7q6MIAy8XSjnQhZlnWn9g9XPth2gOkYii2J9M3TBBeFWXfk8KHcXuA6RuVqr2grD3AUtSvL4vW2GueNsyMKmvOnuFHlFtcbDXlXEvQXTXHAFxivvXjT15h5MFbICfVIkach8qWbceLBUQwrA7TFQk0BMAPYSqiA62x3EfNn3fa76Vf6rX-muxvg_U5Na3ezip47tkXhic794sgxDEAiGkCrF7re_dlorJta1Rc1ocKLqjQ58W8H2ZJtZOJ78J8j93zcbA7B89O9ly9X_edA9WWtFyMZlIA0uTBM16Dy7TjsGMduDc6AXwDG0WfvpNhw
 content-Type: application/json
 
 {
-    "category_name":"Laptop",
-    "category_ascii":"laptop"
+    "category_name":"Mobile",
+    "category_ascii":"mobile"
 }
 
 ###
+DELETE  http://localhost:8080/api/categories/1
+Authorization: Bearer eyJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJzZWxmIiwic3ViIjoiZGF0bmgiLCJleHAiOjE3MTExMDM4NzQsImlhdCI6MTcxMDM4Mzg3NCwiYXV0aG9yaXRpZXMiOiJST0xFX0FETUlOIn0.KbA-f-1w63aUZ7_xV0iu2nO7q6MIAy8XSjnQhZlnWn9g9XPth2gOkYii2J9M3TBBeFWXfk8KHcXuA6RuVqr2grD3AUtSvL4vW2GueNsyMKmvOnuFHlFtcbDXlXEvQXTXHAFxivvXjT15h5MFbICfVIkach8qWbceLBUQwrA7TFQk0BMAPYSqiA62x3EfNn3fa76Vf6rX-muxvg_U5Na3ezip47tkXhic794sgxDEAiGkCrF7re_dlorJta1Rc1ocKLqjQ58W8H2ZJtZOJ78J8j93zcbA7B89O9ly9X_edA9WWtFyMZlIA0uTBM16Dy7TjsGMduDc6AXwDG0WfvpNhw
+
+
+###
 POST http://localhost:8080/api/brands
+Authorization: Bearer eyJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJzZWxmIiwic3ViIjoiZGF0bmgiLCJleHAiOjE3MTExMDM4NzQsImlhdCI6MTcxMDM4Mzg3NCwiYXV0aG9yaXRpZXMiOiJST0xFX0FETUlOIn0.KbA-f-1w63aUZ7_xV0iu2nO7q6MIAy8XSjnQhZlnWn9g9XPth2gOkYii2J9M3TBBeFWXfk8KHcXuA6RuVqr2grD3AUtSvL4vW2GueNsyMKmvOnuFHlFtcbDXlXEvQXTXHAFxivvXjT15h5MFbICfVIkach8qWbceLBUQwrA7TFQk0BMAPYSqiA62x3EfNn3fa76Vf6rX-muxvg_U5Na3ezip47tkXhic794sgxDEAiGkCrF7re_dlorJta1Rc1ocKLqjQ58W8H2ZJtZOJ78J8j93zcbA7B89O9ly9X_edA9WWtFyMZlIA0uTBM16Dy7TjsGMduDc6AXwDG0WfvpNhw
 content-Type: application/json
 
 {
-    "brand_name":"Samsung",
-    "brand_ascii":"samsung",
+    "brand_name":"iPhonr",
+    "brand_ascii":"iphone",
     "category_id":"1"
 }
 
 ###
 PUT http://localhost:8080/api/products/1
-content-Type: application/json
+Authorization: Bearer eyJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJzZWxmIiwic3ViIjoiZGF0bmgiLCJleHAiOjE3MTExMDM4NzQsImlhdCI6MTcxMDM4Mzg3NCwiYXV0aG9yaXRpZXMiOiJST0xFX0FETUlOIn0.KbA-f-1w63aUZ7_xV0iu2nO7q6MIAy8XSjnQhZlnWn9g9XPth2gOkYii2J9M3TBBeFWXfk8KHcXuA6RuVqr2grD3AUtSvL4vW2GueNsyMKmvOnuFHlFtcbDXlXEvQXTXHAFxivvXjT15h5MFbICfVIkach8qWbceLBUQwrA7TFQk0BMAPYSqiA62x3EfNn3fa76Vf6rX-muxvg_U5Na3ezip47tkXhic794sgxDEAiGkCrF7re_dlorJta1Rc1ocKLqjQ58W8H2ZJtZOJ78J8j93zcbA7B89O9ly9X_edA9WWtFyMZlIA0uTBM16Dy7TjsGMduDc6AXwDG0WfvpNhw
 
+content-Type: application/json
 
 {
 
@@ -47,18 +53,19 @@ content-Type: application/json
 
 ###
 DELETE http://localhost:8080/api/products/1
-Authorization: Bearer eyJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJzZWxmIiwic3ViIjoiYWRtaW4iLCJleHAiOjE3MTAzNTQ0NDAsImlhdCI6MTcxMDM0NzI0MCwiYXV0aG9yaXRpZXMiOiJST0xFX0FETUlOUk9MRV9VU0VSIn0.jeeg38EFo-Fm1QZwgmS8IbALZQwIB4hA0MUkTj7mZA78qFhDBTGanpjxSPFu0NtwPIBVmiSpOV5cnIfb55qlGzJ57o0TUsvxinUjSt6ARkJ4iwlK9biij3Fzyh0BSx1X89Uo9SxHzVFvOdbYjPwTXfWEwOrzq0kM0RSuPqOrjo8VqzqLKMI1ybS4q-7VceX7WYKN7NeXzwokJ8k82Nb6a60f39r7IWPmCb-yD8l3HF63gHxH42N3-0sGKd2Wz8a5p4pp1sig02kTjdI3DUKZADXFlivpA0XDW4cJti5VCECZdHKwOqwUICzO3_EHa2cj4gmfFmKjeeGJU0b2qKI4zw
+# Authorization: Bearer eyJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJzZWxmIiwic3ViIjoiYWRtaW4iLCJleHAiOjE3MTAzNTQ0NDAsImlhdCI6MTcxMDM0NzI0MCwiYXV0aG9yaXRpZXMiOiJST0xFX0FETUlOUk9MRV9VU0VSIn0.jeeg38EFo-Fm1QZwgmS8IbALZQwIB4hA0MUkTj7mZA78qFhDBTGanpjxSPFu0NtwPIBVmiSpOV5cnIfb55qlGzJ57o0TUsvxinUjSt6ARkJ4iwlK9biij3Fzyh0BSx1X89Uo9SxHzVFvOdbYjPwTXfWEwOrzq0kM0RSuPqOrjo8VqzqLKMI1ybS4q-7VceX7WYKN7NeXzwokJ8k82Nb6a60f39r7IWPmCb-yD8l3HF63gHxH42N3-0sGKd2Wz8a5p4pp1sig02kTjdI3DUKZADXFlivpA0XDW4cJti5VCECZdHKwOqwUICzO3_EHa2cj4gmfFmKjeeGJU0b2qKI4zw
 
 
 ###
 POST http://localhost:8080/api/products
+Authorization: Bearer eyJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJzZWxmIiwic3ViIjoiZGF0bmgiLCJleHAiOjE3MTEwOTk5NTAsImlhdCI6MTcxMDM3OTk1MCwiYXV0aG9yaXRpZXMiOiJST0xFX0FETUlOIn0.ZfHn_Hz8T18QSvK3QvVT91fy9lzWZGZJSBZDj3QILSrVV6DaAQjM01GerSLmytIvDRit_RWWpzpRLwxTu6WSj48jbengJHk9zPra9W8UqWLi2TLjF6l480M7wxQhz1zQUosbyBwJu3jSiRXG-gfcYtaCIQ5S_y408ojcPgylkjvQ-jtZN9SDvegTF4mBhV-ObKDTkZZD5vFCpt48gNt3tVePBaZbW2kYwn8P0MWwUKZfI-uuoI2EIgVFkp2M5ezIi3Q0dTfFH2aj04MszSSnlD_Kj_1iPn2SgdwFb4x3nXXGNYjDEzJvyxCqxiLbfZWRlfClSPZ7B2OxdlOHsNU81Q
 content-Type: application/json
 
 {
-    "product_name":"iPhone 14 Pro",
-    "product_ascii":"iphone-14-pro",
+    "product_name":"iPhone 15 Pro",
+    "product_ascii":"iphone-15-pro",
     "category_id": "1",
-    "brand_id":"2",
+    "brand_id":"1",
     "price": "23890000"
 }   
 
@@ -67,9 +74,6 @@ content-Type: application/json
 DELETE http://localhost:8080/api/products/1
 Authorization: Bearer eyJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJzZWxmIiwic3ViIjoiYWRtaW4iLCJleHAiOjE3MTEwNjg3OTYsImlhdCI6MTcxMDM0ODc5NiwiYXV0aG9yaXRpZXMiOiJST0xFX0FETUlOUk9MRV9VU0VSIn0.EOatvVKhBZurFvE5cycbkV2BfARsz7VYajV_INldh7KLQJSVzPnQOzlcwxKO3oD6giqRJSH6VRNISEqsvQvRQfikoRaKVAHEa4ZiLP8LnWMPsSiTqoOeRHm-zJ56m1T8NeLiOklIWuZ7J3BxEc0DqlSDWSSk8DAINJ9Br6Jg6zj0NMaNO_pXTE3uvaxVye6atPS37l13IGSjNKNVhI5tth8n8x7ewFmXee4RvwYN6Xua8su0s1zeOg2KWFSh-YK-56PV1Noj5qiaci72G_KZ0prMrvRe9HVu6-EJoXcjgPGiON30JbnsGvj-t8Nk7VrAZ47nzAtPwJZ0p8LTEu0fpw
 
-
-###
-GET http://localhost:8080/api/auth1
 
 
 ###
@@ -80,8 +84,8 @@ POST http://localhost:8080/api/auth/register
 content-Type: application/json
 
 {
-    "username":"admin",
-    "password":"admin"
+    "username":"datnh",
+    "password":"datnh123"
 }
 
 ###
@@ -89,7 +93,17 @@ POST http://localhost:8080/api/auth/login
 content-Type: application/json
 
 {
-    "username":"admin",
-    "password":"admin"
+    "username":"user",
+    "password":"user"
 }
+
+###
+POST http://localhost:8080/api/auth/login
+content-Type: application/json
+
+{
+    "username":"datnh",
+    "password":"datnh123"
+}
+
 

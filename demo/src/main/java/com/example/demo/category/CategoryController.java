@@ -3,6 +3,7 @@ package com.example.demo.category;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import com.example.demo.category.converter.CategoryToCategoryDto;
@@ -46,6 +47,7 @@ public class CategoryController {
     }
 
     @PostMapping()
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public MyResponse create(@RequestBody CategoryDto dto) {
         Category category = this.categoryService.create(dto);
 
@@ -53,6 +55,7 @@ public class CategoryController {
     }
 
     @PutMapping()
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public MyResponse update(
             @RequestBody CategoryDto updateDto,
             @PathVariable Long id) {
@@ -63,6 +66,7 @@ public class CategoryController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public MyResponse delete(
             @PathVariable Long id) {
 

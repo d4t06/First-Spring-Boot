@@ -16,6 +16,7 @@ public class UserDtoToUser implements Converter<UserDto, User> {
         user.setUsername(source.username());
         user.setPassword(source.password());
         user.setRole("USER");
+        user.setRefreshToken("");
 
         return user;
     }

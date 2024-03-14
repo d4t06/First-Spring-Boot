@@ -20,10 +20,9 @@ public class JwtProvider {
         this.jwtEncoder = jwtEncoder;
     }
 
-    public String generateToken(Authentication authentication) {
+    public String generateToken(Authentication authentication, long expiresIn) {
 
         Instant now = Instant.now();
-        long expiresIn = 200; // 2 hour
 
         String authorities = authentication.getAuthorities().stream()
                 .map(grantedAuthority -> grantedAuthority.getAuthority())
@@ -32,7 +31,7 @@ public class JwtProvider {
                 JwtClaimsSet claims = JwtClaimsSet.builder()
                 .issuer("self")
                 .issuedAt(now)
-                .expiresAt(now.plus(expiresIn, ChronoUnit.HOURS))
+                .expiresAt(now.plus(expiresIn, ChronoUnit.SECONDS))
                 .subject(authentication.getName())
                 .claim("authorities", authorities)
                 .build();
