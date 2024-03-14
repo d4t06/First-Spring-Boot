@@ -21,9 +21,13 @@ public class MyUserPrincipal implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Arrays.stream(StringUtils.tokenizeToStringArray(this.user.getRole(), ""))
+        Collection<? extends GrantedAuthority> roles = Arrays.stream(StringUtils.tokenizeToStringArray(this.user.getRole(), " "))
         .map(role -> new SimpleGrantedAuthority("ROLE_" + role))
         .toList();
+
+        System.out.println(">>> check roles: " + roles);
+
+        return roles;
     }
 
     @Override

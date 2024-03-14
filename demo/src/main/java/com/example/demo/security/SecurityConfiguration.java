@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -19,6 +20,8 @@ import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
+import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
@@ -45,10 +48,9 @@ public class SecurityConfiguration {
     private final CustomTokenAccessDeniedEntryPoint customTokenAccessDeniedEntryPoint;
 
     public SecurityConfiguration(
-        CustomAuthenticationEntryPoint customAuthenticationEntryPoint,
-        CustomTokenAuthenticationEntryPoint customTokenAuthenticationEntryPoint,
-        CustomTokenAccessDeniedEntryPoint customTokenAccessDeniedEntryPoint
-    ) throws NoSuchAlgorithmException {
+            CustomAuthenticationEntryPoint customAuthenticationEntryPoint,
+            CustomTokenAuthenticationEntryPoint customTokenAuthenticationEntryPoint,
+            CustomTokenAccessDeniedEntryPoint customTokenAccessDeniedEntryPoint) throws NoSuchAlgorithmException {
         KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
         keyPairGenerator.initialize(2048);
         KeyPair keyPair = keyPairGenerator.generateKeyPair();
@@ -68,24 +70,23 @@ public class SecurityConfiguration {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
-                    .authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests
-                    .requestMatchers(HttpMethod.POST, "/products/**").hasAuthority("ROLE_ADMIN")
-                    .requestMatchers(HttpMethod.DELETE, "/products/**").hasAuthority("ROLE_ADMIN")
-                    .requestMatchers(HttpMethod.PUT, "/products/**").hasAuthority("ROLE_ADMIN")
+                .authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests
+                        .requestMatchers(HttpMethod.POST, "/products/**").hasAuthority("ROLE_ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/products/**").hasAnyAuthority("ROLE_ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/products/**").hasAuthority("ROLE_ADMIN")
 
-                    .requestMatchers(HttpMethod.POST, "/category/**").hasAuthority("ROLE_ADMIN")
-                    .requestMatchers(HttpMethod.DELETE, "/category/**").hasAuthority("ROLE_ADMIN")
-                    .requestMatchers(HttpMethod.PUT, "/category/**").hasAuthority("ROLE_ADMIN")
-                    .requestMatchers(AntPathRequestMatcher.antMatcher("/auth/*")).permitAll()
-                    .anyRequest().authenticated()
-                )
+                        .requestMatchers(HttpMethod.POST, "/category/**").hasAuthority("ROLE_ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/category/**").hasAuthority("ROLE_ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/category/**").hasAuthority("ROLE_ADMIN")
+                        .requestMatchers(AntPathRequestMatcher.antMatcher("/auth/*")).permitAll()
+                        .anyRequest().authenticated())
                 .csrf(csrf -> csrf.disable())
                 .httpBasic(httpBasic -> httpBasic.authenticationEntryPoint(this.customAuthenticationEntryPoint))
                 .oauth2ResourceServer(oauth2ResourceServer -> oauth2ResourceServer
-                        .jwt()
-                        .and().authenticationEntryPoint(this.customTokenAuthenticationEntryPoint)
-                        .accessDeniedHandler(this.customTokenAccessDeniedEntryPoint)
-                    )
+                    .jwt(customer -> customer.jwtAuthenticationConverter((this.jwtAuthenticationConverter())))
+                    .authenticationEntryPoint(this.customTokenAuthenticationEntryPoint)
+                    .accessDeniedHandler(this.customTokenAccessDeniedEntryPoint)
+                )
                 .sessionManagement(
                         sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .build();
@@ -114,5 +115,19 @@ public class SecurityConfiguration {
     @Bean
     public JwtDecoder jwtDecoder() {
         return NimbusJwtDecoder.withPublicKey(this.publicKey).build();
+    }
+
+    public JwtAuthenticationConverter jwtAuthenticationConverter() {
+
+        System.out.println(">>> run Jwt converter");
+        JwtGrantedAuthoritiesConverter jwtGrantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
+
+        jwtGrantedAuthoritiesConverter.setAuthoritiesClaimName("authorities");
+        jwtGrantedAuthoritiesConverter.setAuthorityPrefix(""); // change SCOPE_USER to USER
+
+        JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
+        jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(jwtGrantedAuthoritiesConverter);
+
+        return jwtAuthenticationConverter;
     }
 }

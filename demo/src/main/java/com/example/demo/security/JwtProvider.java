@@ -23,7 +23,7 @@ public class JwtProvider {
     public String generateToken(Authentication authentication) {
 
         Instant now = Instant.now();
-        long expiresIn = 2; // 2 hour
+        long expiresIn = 200; // 2 hour
 
         String authorities = authentication.getAuthorities().stream()
                 .map(grantedAuthority -> grantedAuthority.getAuthority())
