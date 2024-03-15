@@ -1,14 +1,11 @@
 package com.example.demo.user.dto;
 
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.util.StringUtils;
 
 import com.example.demo.security.JwtProvider;
 import com.example.demo.user.entity.User;
 
-import java.util.Arrays;
 import java.util.Collection;
 
 public class MyUserPrincipal implements UserDetails {

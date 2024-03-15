@@ -12,6 +12,7 @@ import org.springframework.security.oauth2.server.resource.InvalidBearerTokenExc
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingRequestCookieException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -26,6 +27,13 @@ public class ExceptionHandlerAdvice {
     @ResponseStatus(HttpStatus.NOT_FOUND)
     MyResponse handleProductNotFoundException(ObjectNotFoundException ex) {
         return new MyResponse(false, ex.getMessage(), HttpStatus.NOT_FOUND.value());
+    }
+
+    // MISSING COOKIE
+    @ExceptionHandler(MissingRequestCookieException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    MyResponse MissingRequestCookieException(Exception ex) {
+        return new MyResponse(false, ex.getMessage(), HttpStatus.BAD_REQUEST.value());
     }
 
     // UNAUTHORIZED

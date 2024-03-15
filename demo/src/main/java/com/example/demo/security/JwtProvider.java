@@ -1,12 +1,13 @@
 package com.example.demo.security;
 
 import java.time.Instant;
+import java.time.LocalTime;
+import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -14,7 +15,6 @@ import org.springframework.security.oauth2.jwt.JwtClaimsSet;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
-import org.springframework.security.oauth2.jwt.JwtException;
 import org.springframework.security.oauth2.server.resource.InvalidBearerTokenException;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -25,6 +25,8 @@ public class JwtProvider {
     private final JwtEncoder jwtEncoder;
 
     private final JwtDecoder jwtDecoder;
+
+    // public static DateTimeFormatter ofLaDateTimeFormatter(FormatStyle timeStyle)
 
     public JwtProvider(
             JwtDecoder jwtDecoder,
@@ -52,15 +54,17 @@ public class JwtProvider {
     }
 
     public String generateToken(String authorities, String username, long expiresIn) {
-
         Instant now = Instant.now();
+        Instant expireAt = now.plus(expiresIn, ChronoUnit.SECONDS);
 
-        System.out.println(">>> generate token check roles: " + authorities);
+        System.out.println("now: " + LocalTime.ofInstant(now, ZoneId.of("UTC+7")).toString());
+        System.out.println("expireAt: " + LocalTime.ofInstant(expireAt, ZoneId.of("UTC+7")).toString());
+        System.out.println("expireAt: " + expireAt);
 
         JwtClaimsSet claims = JwtClaimsSet.builder()
                 .issuer("self")
                 .issuedAt(now)
-                .expiresAt(now.plus(expiresIn, ChronoUnit.SECONDS))
+                .expiresAt(expireAt)
                 .subject(username)
                 .claim("authorities", authorities)
                 .build();
@@ -69,12 +73,8 @@ public class JwtProvider {
     }
 
     public String generateRefreshToken(String username, long expiresIn) {
-
         Instant now = Instant.now();
         Instant expireAt = now.plus(expiresIn, ChronoUnit.SECONDS);
-
-        System.out.println(">>> token expireAt: " + expireAt);
-        System.out.println(">>> token now: " + now);
 
         JwtClaimsSet claims = JwtClaimsSet.builder()
                 .issuer("self")

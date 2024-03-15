@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
@@ -17,7 +16,6 @@ import com.example.demo.user.dto.UserDto;
 import com.example.demo.user.entity.User;
 
 import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 @Service
@@ -26,6 +24,9 @@ public class AuthService {
     private final JwtProvider jwtProvider;
 
     private final UserService userService;
+
+    public static int REFRESH_TOKEN_EXPIRE = 60;
+    public static int ACCESS_TOKEN_EXPIRE = 30;
 
     public AuthService(
             JwtProvider jwtProvider,
@@ -54,7 +55,7 @@ public class AuthService {
         ResponseUserDto userDto = new ResponseUserDto(principal.getUsername(), principal.getUser().getRole());
 
         // generate and update user refresh token
-        String refreshToken = this.jwtProvider.generateRefreshToken(principal.getUsername(), 30);
+        String refreshToken = this.jwtProvider.generateRefreshToken(principal.getUsername(), REFRESH_TOKEN_EXPIRE);
         // create httpOnly cookie
         Cookie cookie = new Cookie("jwt", refreshToken);
         cookie.setHttpOnly(true); // must enable to make sure that token can not be access
@@ -65,7 +66,7 @@ public class AuthService {
         // get user role as string for generate access token
         String authorities = this.jwtProvider.getJoinAuthoritiesFromPrefix(authentication.getAuthorities());
         // generate token, useInfo and make response
-        String token = this.jwtProvider.generateToken(authorities, principal.getUsername(), 15);
+        String token = this.jwtProvider.generateToken(authorities, principal.getUsername(), ACCESS_TOKEN_EXPIRE);
 
         Map<String, Object> resultMap = new HashMap<>();
         resultMap.put("userInfo", userDto);
@@ -83,7 +84,7 @@ public class AuthService {
         // get user role as string for generate access token
         String authorities = this.jwtProvider.getJoinAuthoritiesFromUserRole(user.getRole());
         // generate token, useInfo and make response
-        String token = this.jwtProvider.generateToken(authorities, user.getUsername(), 15);
+        String token = this.jwtProvider.generateToken(authorities, user.getUsername(), ACCESS_TOKEN_EXPIRE);
 
         return token;
     }
