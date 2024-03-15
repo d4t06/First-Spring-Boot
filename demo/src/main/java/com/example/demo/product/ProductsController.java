@@ -27,6 +27,7 @@ public class ProductsController {
     }
 
     @GetMapping()
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public MyResponse findAll() {
         List<Product> products = this.productService.findAll();
 

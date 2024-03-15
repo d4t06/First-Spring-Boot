@@ -5,8 +5,8 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.util.StringUtils;
 
+import com.example.demo.security.JwtProvider;
 import com.example.demo.user.entity.User;
-
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -15,15 +15,18 @@ public class MyUserPrincipal implements UserDetails {
 
     private final User user;
 
-    public MyUserPrincipal(User user) {
+    private final JwtProvider jwtProvider;
+
+    public MyUserPrincipal(
+            JwtProvider jwtProvider,
+            User user) {
         this.user = user;
+        this.jwtProvider = jwtProvider;
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        Collection<? extends GrantedAuthority> roles = Arrays.stream(StringUtils.tokenizeToStringArray(this.user.getRole(), " "))
-        .map(role -> new SimpleGrantedAuthority("ROLE_" + role))
-        .toList();
+        Collection<? extends GrantedAuthority> roles = this.jwtProvider.getPrefixAuthorities(user.getRole());
 
         System.out.println(">>> check roles: " + roles);
 
