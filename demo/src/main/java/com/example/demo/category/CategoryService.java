@@ -27,8 +27,8 @@ public class CategoryService {
 
     public List<Category> findAll() {
         List<Category> categories = this.categoryRepository.findAll();
-        if (categories.isEmpty())
-            throw new ObjectNotFoundException("Category not found");
+        // if (categories.isEmpty())
+        //     throw new ObjectNotFoundException("Category not found");
 
         return categories;
     }

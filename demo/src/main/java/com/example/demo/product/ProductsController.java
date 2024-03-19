@@ -28,9 +28,7 @@ public class ProductsController {
     }
 
     @GetMapping()
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public MyResponse findAll() {
-        System.out.println(">>> get product" + Instant.now());
         List<Product> products = this.productService.findAll();
 
         List<ProductDTO> productsDTO = new ArrayList<>();

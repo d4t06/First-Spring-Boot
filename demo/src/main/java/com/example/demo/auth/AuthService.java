@@ -26,7 +26,7 @@ public class AuthService {
     private final UserService userService;
 
     public static int REFRESH_TOKEN_EXPIRE = 60 * 60 * 24;
-    public static int ACCESS_TOKEN_EXPIRE = 30;
+    public static int ACCESS_TOKEN_EXPIRE = 15;
 
     public AuthService(
             JwtProvider jwtProvider,

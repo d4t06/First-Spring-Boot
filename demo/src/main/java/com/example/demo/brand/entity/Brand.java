@@ -2,6 +2,7 @@ package com.example.demo.brand.entity;
 
 import com.example.demo.category.entity.Category;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -29,7 +30,7 @@ public class Brand {
    @Column(nullable = false)
    private String brand_name;
 
-   @Column(nullable = false, unique = true)
+   @Column(nullable = false)
    private String brand_ascii;
 
    @Column(nullable = false)
