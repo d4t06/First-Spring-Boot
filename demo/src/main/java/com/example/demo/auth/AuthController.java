@@ -1,6 +1,5 @@
 package com.example.demo.auth;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.security.access.AccessDeniedException;
@@ -18,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.demo.system.MyResponse;
 import com.example.demo.user.dto.UserDto;
 
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 
 @RestController()
@@ -69,12 +69,24 @@ public class AuthController {
 
         System.out.println(">> check cookie token: " + refreshToken);
 
-        String token = this.authService.refreshToken(refreshToken);
-
-        Map<String, Object> resultMap = new HashMap<>();
-        resultMap.put("token", token);
+        Map<String, Object> resultMap = this.authService.refreshToken(refreshToken);
 
         return new MyResponse(true, "Refresh token successful", 200, resultMap);
+
+    }
+
+    @GetMapping("/logout")
+    public MyResponse logOut(
+            HttpServletResponse res) {
+
+        // create null cookie
+        Cookie cookie = new Cookie("jwt", null);
+        cookie.setHttpOnly(true); // must enable to make sure that token can not be access
+        cookie.setMaxAge(0);
+        // replace refresh token in client browser cookie
+        res.addCookie(cookie);
+
+        return new MyResponse(true, "Logout successful", 200);
 
     }
 }
