@@ -8,6 +8,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.example.demo.security.JwtProvider;
 import com.example.demo.user.converter.UserDtoToUser;
 import com.example.demo.user.dto.MyUserPrincipal;
 import com.example.demo.user.dto.UserDto;
@@ -20,6 +21,7 @@ public class UserService implements UserDetailsService {
     private final UserRepository userRepository;
     private final UserDtoToUser userDtoToUser;
     private final PasswordEncoder passwordEncoder;
+    private final JwtProvider jwtProvider;
 
     @Override
     // override method loadUserByUsername and return myUserPrincipal (implement
@@ -29,15 +31,14 @@ public class UserService implements UserDetailsService {
         System.out.println(">>> run loadUserByUsername and return UserPrincipal");
 
         UserDetails userDetails = this.userRepository.findByUsername(username)
-                .map(user -> new MyUserPrincipal(user))
+                .map(user -> new MyUserPrincipal(jwtProvider, user))
                 .orElseThrow(() -> new UsernameNotFoundException("Username not found"));
-
-        System.out.println(">>> check user detail: " + userDetails);
 
         return userDetails;
     }
 
     public UserService(
+        JwtProvider jwtProvider,
             PasswordEncoder passwordEncoder,
             UserRepository userRepository,
             UserDtoToUser userDtoToUser) {
@@ -45,6 +46,7 @@ public class UserService implements UserDetailsService {
         this.userRepository = userRepository;
         this.userDtoToUser = userDtoToUser;
         this.passwordEncoder = passwordEncoder;
+        this.jwtProvider = jwtProvider;
     }
 
     public User findOne(String username) {
@@ -60,15 +62,6 @@ public class UserService implements UserDetailsService {
         user.setPassword(this.passwordEncoder.encode(userDto.password()));
 
         return this.userRepository.save(user);
-    }
-
-    public void updateRefreshToken(String refreshToken, String username) {
-        User user = this.findOne(username);
-
-        user.setRefreshToken(refreshToken);
-
-        this.userRepository.save(user);
-
     }
 
 }

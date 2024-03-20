@@ -34,6 +34,6 @@ public class Category {
     @Column(nullable = false, unique = true)
     private String category_ascii;
 
-    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "category", cascade = CascadeType.REMOVE ,orphanRemoval = true)
     private List<Brand> brands = new ArrayList<Brand>();
 }

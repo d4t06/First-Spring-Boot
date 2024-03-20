@@ -3,9 +3,7 @@ package com.example.demo.auth;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
@@ -17,7 +15,7 @@ import com.example.demo.user.dto.ResponseUserDto;
 import com.example.demo.user.dto.UserDto;
 import com.example.demo.user.entity.User;
 
-import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 
 @Service
@@ -26,6 +24,9 @@ public class AuthService {
     private final JwtProvider jwtProvider;
 
     private final UserService userService;
+
+    public static int REFRESH_TOKEN_EXPIRE = 60 * 60 * 24;
+    public static int ACCESS_TOKEN_EXPIRE = 15;
 
     public AuthService(
             JwtProvider jwtProvider,
@@ -44,20 +45,28 @@ public class AuthService {
         return new MyResponse(true, "Register ok", HttpStatus.OK.value());
     }
 
-    public Map<String, Object> handleLogin(Authentication authentication) {
-        System.out.println(">>> handle login");
+    public Map<String, Object> handleLogin(
+            Authentication authentication,
+            HttpServletResponse res) {
+
+        System.out.println(">>> run handle login");
 
         MyUserPrincipal principal = (MyUserPrincipal) authentication.getPrincipal();
         ResponseUserDto userDto = new ResponseUserDto(principal.getUsername(), principal.getUser().getRole());
 
         // generate and update user refresh token
-        String refreshToken = this.jwtProvider.generateToken(authentication, 30);
-        System.out.println(">>> check refresh token: " + refreshToken);
-        this.userService.updateRefreshToken(refreshToken, principal.getUsername());
+        String refreshToken = this.jwtProvider.generateRefreshToken(principal.getUsername(), REFRESH_TOKEN_EXPIRE);
+        // create httpOnly cookie
+        Cookie cookie = new Cookie("jwt", refreshToken);
+        cookie.setHttpOnly(true); // must enable to make sure that token can not be access
+        cookie.setMaxAge(24 * 60 * 60 * 1000); // one day
+        // store refresh token to client browser cookie
+        res.addCookie(cookie);  
 
-
+        // get user role as string for generate access token
+        String authorities = this.jwtProvider.getJoinAuthoritiesFromPrefix(authentication.getAuthorities());
         // generate token, useInfo and make response
-        String token = this.jwtProvider.generateToken(authentication, 30);
+        String token = this.jwtProvider.generateToken(authorities, principal.getUsername(), ACCESS_TOKEN_EXPIRE);
 
         Map<String, Object> resultMap = new HashMap<>();
         resultMap.put("userInfo", userDto);
@@ -66,15 +75,24 @@ public class AuthService {
         return resultMap;
     }
 
-    public void refreshToken(
-            HttpServletRequest req, HttpServletResponse res) {
-        final String header = req.getHeader(HttpHeaders.AUTHORIZATION);
-        final String refreshToken;
+    public Map<String, Object>  refreshToken(
+            String refreshToken) {
 
-        if (header == null || !header.startsWith("Bearer "))
-            throw new AccessDeniedException("");
+        String username = this.jwtProvider.parserUsernameFromToken(refreshToken);
+        User user = this.userService.findOne(username);
 
-        refreshToken = header.substring(7);
+        // get user role as string for generate access token
+        String authorities = this.jwtProvider.getJoinAuthoritiesFromUserRole(user.getRole());
+        // generate token, useInfo and make response
+        String token = this.jwtProvider.generateToken(authorities, user.getUsername(), ACCESS_TOKEN_EXPIRE);
+
+        ResponseUserDto userDto = new ResponseUserDto(user.getUsername(), user.getRole());
+        // make response data
+        Map<String, Object> resultMap = new HashMap<>();
+        resultMap.put("userInfo", userDto);
+        resultMap.put("token", token);
+
+        return resultMap;
     }
 
 }

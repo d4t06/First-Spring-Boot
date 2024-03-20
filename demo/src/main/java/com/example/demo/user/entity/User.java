@@ -35,9 +35,6 @@ public class User {
     @Column(nullable = false)
     String role;
 
-    @Column(nullable = false, length = 400)
-    String refreshToken;
-
     @CreationTimestamp
     private LocalDateTime created_at;
     @UpdateTimestamp

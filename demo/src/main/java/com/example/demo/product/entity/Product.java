@@ -7,6 +7,8 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import com.example.demo.brand.entity.Brand;
 import com.example.demo.category.entity.Category;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -49,7 +51,7 @@ public class Product implements Serializable {
     @Column(nullable = false, name = "category_id")
     private Long categoryId;
 
-    @ManyToOne()
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "category_id", insertable = false, updatable = false)
     private Category category;
 
@@ -57,7 +59,7 @@ public class Product implements Serializable {
     @Column(nullable = false, name = "brand_id")
     private Long brandId;
 
-    @ManyToOne()
+    @ManyToOne(cascade = CascadeType.REMOVE)
     @JoinColumn(name = "brand_id", insertable = false, updatable = false)
     private Brand brand;
 

@@ -29,7 +29,7 @@ public class Brand {
    @Column(nullable = false)
    private String brand_name;
 
-   @Column(nullable = false, unique = true)
+   @Column(nullable = false)
    private String brand_ascii;
 
    @Column(nullable = false)

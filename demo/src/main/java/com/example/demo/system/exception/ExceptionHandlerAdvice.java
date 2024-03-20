@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -13,10 +12,10 @@ import org.springframework.security.oauth2.server.resource.InvalidBearerTokenExc
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingRequestCookieException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import com.example.demo.system.MyResponse;
@@ -28,6 +27,13 @@ public class ExceptionHandlerAdvice {
     @ResponseStatus(HttpStatus.NOT_FOUND)
     MyResponse handleProductNotFoundException(ObjectNotFoundException ex) {
         return new MyResponse(false, ex.getMessage(), HttpStatus.NOT_FOUND.value());
+    }
+
+    // MISSING COOKIE
+    @ExceptionHandler(MissingRequestCookieException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    MyResponse MissingRequestCookieException(Exception ex) {
+        return new MyResponse(false, ex.getMessage(), HttpStatus.BAD_REQUEST.value());
     }
 
     // UNAUTHORIZED
