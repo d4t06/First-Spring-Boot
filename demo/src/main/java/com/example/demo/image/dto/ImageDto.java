@@ -8,7 +8,7 @@ public record ImageDto(
       String image_url,
 
       @NotEmpty(message = "name not empty")
-      String image_name,
+      String name,
 
       @NotEmpty(message = "public id not empty")
       String public_id,

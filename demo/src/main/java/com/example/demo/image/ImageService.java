@@ -1,11 +1,8 @@
 package com.example.demo.image;
 
-import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-
-import javax.imageio.ImageIO;
 
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -32,15 +29,15 @@ public class ImageService {
    }
 
    public Image save(MultipartFile multipartFile) throws IOException {
-      BufferedImage bi = ImageIO.read(multipartFile.getInputStream());
+      String imageDataUri = this.cloudinaryService.convertFileToDateURI(multipartFile);
+      Map<?, ?> result = this.cloudinaryService.upload(imageDataUri);
 
-      Map result = this.cloudinaryService.upload(multipartFile);
       Image image = new Image();
 
-      image.setImage_name(multipartFile.getOriginalFilename());
+      image.setName(multipartFile.getOriginalFilename());
       image.setImage_url((String) result.get("url"));
       image.setPublic_id((String) result.get("public_id"));
-      image.setSize((int) multipartFile.getSize());
+      image.setSize(Math.round(multipartFile.getSize() / 1024));
 
       return this.imageRepository.save(image);
    }

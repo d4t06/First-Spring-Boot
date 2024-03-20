@@ -22,7 +22,7 @@ public class Image {
    @GeneratedValue(strategy = GenerationType.IDENTITY)
    private long id;
 
-   private String image_name;
+   private String name;
 
    private String image_url;
 

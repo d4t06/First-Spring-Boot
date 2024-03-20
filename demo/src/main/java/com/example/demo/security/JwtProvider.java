@@ -57,9 +57,7 @@ public class JwtProvider {
         Instant now = Instant.now();
         Instant expireAt = now.plus(expiresIn, ChronoUnit.SECONDS);
 
-        System.out.println("now: " + LocalTime.ofInstant(now, ZoneId.of("UTC+7")).toString());
         System.out.println("expireAt: " + LocalTime.ofInstant(expireAt, ZoneId.of("UTC+7")).toString());
-        System.out.println("expireAt: " + expireAt);
 
         JwtClaimsSet claims = JwtClaimsSet.builder()
                 .issuer("self")

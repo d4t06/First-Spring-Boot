@@ -2,7 +2,6 @@ package com.example.demo.brand.entity;
 
 import com.example.demo.category.entity.Category;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;

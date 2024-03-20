@@ -67,12 +67,10 @@ public class AuthController {
         if (refreshToken == null)
             throw new AccessDeniedException("");
 
-        System.out.println(">> check cookie token: " + refreshToken);
-
+        System.out.println(">>> refresh toeken");
         Map<String, Object> resultMap = this.authService.refreshToken(refreshToken);
 
         return new MyResponse(true, "Refresh token successful", 200, resultMap);
-
     }
 
     @GetMapping("/logout")

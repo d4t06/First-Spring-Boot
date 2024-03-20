@@ -2,16 +2,15 @@ package com.example.demo.image;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
+import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,7 +22,7 @@ import com.example.demo.image.entity.Image;
 import com.example.demo.system.MyResponse;
 import org.springframework.web.bind.annotation.PostMapping;
 
-@Controller
+@RestController
 @RequestMapping("/images")
 public class ImageController {
 
@@ -48,14 +47,19 @@ public class ImageController {
          imagesDto.add(imageDto);
       }
 
-      return new MyResponse(true, "Get all images successful", 200, imagesDto);
+      Map<String, Object> result = new HashMap<>();
+      result.put("images", imagesDto);
+      result.put("page", 1);
+      result.put("pageSize", 10);
+      result.put("count", 99);
+
+      return new MyResponse(true, "Get all images successful", 200, result);
 
    }
 
    @PostMapping("")
-   @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-   public MyResponse save(@RequestParam MultipartFile multipartFile) throws IOException {
-      BufferedImage bi = ImageIO.read(multipartFile.getInputStream());
+   // @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+   public MyResponse save(@RequestPart("image") MultipartFile multipartFile) throws IOException {
 
       Image image = this.imageService.save(multipartFile);
 
