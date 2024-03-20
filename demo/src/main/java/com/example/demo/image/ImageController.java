@@ -6,9 +6,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -67,10 +69,11 @@ public class ImageController {
 
    }
 
-   @DeleteMapping("/{id}")
+   @DeleteMapping("")
    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-   public MyResponse delete(@PathVariable String id) throws IOException {
-      this.imageService.delete(id);
+   public MyResponse delete(@RequestParam String publicID) throws IOException {
+
+      this.imageService.delete(publicID);
       return new MyResponse(true, "Delete image successful", HttpStatus.OK.value());
    }
 

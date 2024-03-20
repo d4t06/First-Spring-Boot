@@ -26,7 +26,7 @@ public class Image {
 
    private String image_url;
 
-   private String public_id;
+   private String publicID;
 
    private int size;
 

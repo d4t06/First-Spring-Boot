@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.example.demo.image.entity.Image;
+import com.example.demo.system.exception.ObjectNotFoundException;
 
 @Service
 public class ImageService {
@@ -28,7 +29,7 @@ public class ImageService {
       return this.imageRepository.findAll();
    }
 
-   public Image save(MultipartFile multipartFile) throws IOException {
+   public Image save(MultipartFile multipartFile) throws  IOException {
       String imageDataUri = this.cloudinaryService.convertFileToDateURI(multipartFile);
       Map<?, ?> result = this.cloudinaryService.upload(imageDataUri);
 
@@ -36,14 +37,21 @@ public class ImageService {
 
       image.setName(multipartFile.getOriginalFilename());
       image.setImage_url((String) result.get("url"));
-      image.setPublic_id((String) result.get("public_id"));
+      image.setPublicID((String) result.get("public_id"));
       image.setSize(Math.round(multipartFile.getSize() / 1024));
 
       return this.imageRepository.save(image);
    }
 
    public void delete(String publicID) throws IOException {
+      Image image = this.imageRepository.findByPublicID(publicID).get(0);
+
+      if (image == null)
+         throw new ObjectNotFoundException("image not found");
+
       this.cloudinaryService.delete(publicID);
+
+      this.imageRepository.delete(image);
    }
 
 }

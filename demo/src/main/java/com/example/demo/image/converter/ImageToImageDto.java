@@ -14,7 +14,7 @@ public class ImageToImageDto implements Converter<Image, ImageDto> {
    @Nullable
    public ImageDto convert(Image source) {
       ImageDto imageDto = new ImageDto(source.getId(), source.getImage_url(), source.getName(),
-            source.getPublic_id(), source.getSize());
+            source.getPublicID(), source.getSize());
       return imageDto;
    }
 
