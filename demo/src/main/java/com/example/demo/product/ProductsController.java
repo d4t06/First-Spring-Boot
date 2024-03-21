@@ -1,13 +1,15 @@
 package com.example.demo.product;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import com.example.demo.product.converter.ProductToProductDto;
 import com.example.demo.product.dto.ProductDTO;
+import com.example.demo.product.dto.ProductResponse;
 import com.example.demo.product.entity.Product;
 import com.example.demo.system.MyResponse;
 import jakarta.validation.Valid;
@@ -27,15 +29,25 @@ public class ProductsController {
     }
 
     @GetMapping()
-    public MyResponse findAll() {
-        List<Product> products = this.productService.findAll();
+    public MyResponse findAll(
+            @RequestParam(value = "page", defaultValue = "0", required = false) int page,
+            @RequestParam(value = "brandID", required = false) List<String> brandID,
+            @RequestParam(value = "categoryID", required = false) Integer categoryID) {
 
-        List<ProductDTO> productsDTO = new ArrayList<>();
-        for (Product product : products) {
-            ProductDTO productDTO = this.productToProductDto.convert(product);
-            productsDTO.add(productDTO);
-        }
-        return new MyResponse(true, "Get all product successful", 200, productsDTO);
+        System.out.println(">>> check params brandID: " + brandID + ", categoryID: " + categoryID);
+
+        ProductResponse productResponse = this.productService.findAll(page, categoryID, brandID);
+
+        return new MyResponse(true, "Get all product successful", 200, productResponse);
+    }
+
+    @GetMapping("/search")
+    public MyResponse getMethodName(
+            @RequestParam(value = "q", required = true) String q,
+            @RequestParam(value = "page", required = false, defaultValue = "0") int page) {
+
+        ProductResponse productResponse = this.productService.search(q, page);
+        return new MyResponse(true, "Get all product successful", 200, productResponse);
     }
 
     @GetMapping("/{product_ascii}")

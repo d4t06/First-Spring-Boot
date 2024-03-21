@@ -1,11 +1,16 @@
 package com.example.demo.product;
 
+import java.util.ArrayList;
 import java.util.List;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.product.converter.ProductDtoToProduct;
+import com.example.demo.product.converter.ProductToProductDto;
 import com.example.demo.product.dto.ProductDTO;
+import com.example.demo.product.dto.ProductResponse;
 import com.example.demo.product.entity.Product;
 import com.example.demo.system.exception.ObjectNotFoundException;
 
@@ -16,20 +21,70 @@ public class ProductService {
 
     private final ProductDtoToProduct productDtoToProduct;
 
+    private final ProductToProductDto productToProductDto;
+
     public ProductService(
+            ProductToProductDto productToProductDto,
             ProductRepository productRepository,
             ProductDtoToProduct productDtoToProduct) {
         this.productRepository = productRepository;
         this.productDtoToProduct = productDtoToProduct;
+        this.productToProductDto = productToProductDto;
     }
 
-    public List<Product> findAll() {
-        List<Product> products = this.productRepository.findAll();
+    public ProductResponse findAll(int page, Integer categoryID, List<String> BrandID) {
 
-        // if (products.isEmpty())
-        //     throw new ObjectNotFoundException("Product not found");
+        Pageable pageable = PageRequest.of(page, 2);
+        Page<Product> products;
 
-        return products;
+        if (categoryID == null) {
+            products = this.productRepository.findAll(pageable);
+        } else {
+            products = this.productRepository.findAllWithParams(pageable, categoryID, BrandID);
+        }
+
+        List<Product> listOfProducts = products.getContent();
+
+        List<ProductDTO> productsDTO = new ArrayList<>();
+        for (Product product : listOfProducts) {
+            ProductDTO productDTO = this.productToProductDto.convert(product);
+            productsDTO.add(productDTO);
+        }
+
+        ProductResponse productResponse = new ProductResponse(productsDTO,
+                products.getNumber(),
+                products.getTotalElements(),
+                categoryID,
+                BrandID,
+                new ArrayList<String>(),
+                products.isLast());
+
+        return productResponse;
+
+    }
+
+    public ProductResponse search(String keyword, int page) {
+        Pageable pageable = PageRequest.of(page, 2);
+        Page<Product> productPage = this.productRepository.findByKeyword(pageable, keyword);
+
+        List<Product> products = productPage.getContent();
+
+        List<ProductDTO> productsDTO = new ArrayList<>();
+        for (Product product : products) {
+            ProductDTO productDTO = this.productToProductDto.convert(product);
+            productsDTO.add(productDTO);
+        }
+
+        ProductResponse productResponse = new ProductResponse(productsDTO,
+                productPage.getNumber(),
+                productPage.getTotalElements(),
+                null,
+                new ArrayList<>(),
+                new ArrayList<>(),
+                productPage.isLast());
+
+        return productResponse;
+
     }
 
     public Product findOne(String product_ascii) {
