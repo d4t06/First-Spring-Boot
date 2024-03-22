@@ -32,19 +32,26 @@ public class ProductService {
         this.productToProductDto = productToProductDto;
     }
 
-    public ProductResponse findAll(int page, int pageSize, Integer categoryID, List<String> brandID) {
+    public ProductResponse findAll(
+            int page,
+            int pageSize,
+            Integer categoryID,
+            List<String> brandID,
+            String column,
+            String type,
+            List<String> price) {
 
-        Pageable pageable = PageRequest.of(page, 2);
-        Page<Product> products;
+        Pageable pageable = PageRequest.of(page, pageSize);
+        Page<Product> productPage;
 
         if (categoryID == null)
-            products = this.productRepository.findAll(pageable);
+            productPage = this.productRepository.findAll(pageable);
         else if (brandID != null)
-            products = this.productRepository.findAllWithCategoryAndBrand(pageable, categoryID, brandID);
+            productPage = this.productRepository.findAllWithCategoryAndBrand(pageable, categoryID, brandID);
         else
-            products = this.productRepository.findAllWithCategory(pageable, categoryID);
+            productPage = this.productRepository.findAllWithCategory(pageable, categoryID);
 
-        List<Product> listOfProducts = products.getContent();
+        List<Product> listOfProducts = productPage.getContent();
 
         List<ProductDTO> productsDTO = new ArrayList<>();
         for (Product product : listOfProducts) {
@@ -52,20 +59,29 @@ public class ProductService {
             productsDTO.add(productDTO);
         }
 
-        ProductResponse productResponse = new ProductResponse(productsDTO,
-                products.getNumber(),
-                products.getTotalElements(),
-                categoryID,
-                6,
-                brandID,
-                new ArrayList<String>(),
-                products.isLast());
+        ProductResponse res = new ProductResponse();
 
-        return productResponse;
+        res.setProducts(productsDTO);
+        res.setPage(page);
+        res.setPageSize(pageSize);
+        res.setCount(productPage.getTotalElements());
+
+        res.setBrandID(brandID);
+        res.setCategoryID(categoryID);
+        res.setIsLast(productPage.isLast());
+        res.setColumn(column);
+        res.setType(type);
+        res.setPrice(price);
+
+        return res;
 
     }
 
-    public ProductResponse search(String keyword, int page, int pageSize) {
+    public ProductResponse search(String keyword,
+            int page,
+            int pageSize,
+            String column,
+            String type) {
         Pageable pageable = PageRequest.of(page, 2);
         Page<Product> productPage = this.productRepository.findByKeyword(pageable, keyword);
 
@@ -77,16 +93,19 @@ public class ProductService {
             productsDTO.add(productDTO);
         }
 
-        ProductResponse productResponse = new ProductResponse(productsDTO,
-                productPage.getNumber(),
-                productPage.getTotalElements(),
-                null,
-                pageSize,
-                new ArrayList<>(),
-                new ArrayList<>(),
-                productPage.isLast());
+        ProductResponse res = new ProductResponse();
+        res.setProducts(productsDTO);
+        res.setPage(page);
+        res.setPageSize(pageSize);
+        res.setCount(productPage.getTotalElements());
 
-        return productResponse;
+        res.setBrandID(new ArrayList<>());
+        res.setCategoryID(null);
+        res.setIsLast(productPage.isLast());
+        res.setColumn(column);
+        res.setType(type);
+
+        return res;
 
     }
 

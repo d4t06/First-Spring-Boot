@@ -16,10 +16,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 
-import com.example.demo.image.converter.ImageToImageDto;
-import com.example.demo.image.dto.ImageDto;
+import com.example.demo.image.dto.ImageResponse;
 import com.example.demo.image.entity.Image;
 import com.example.demo.system.MyResponse;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -29,38 +27,23 @@ import org.springframework.web.bind.annotation.PostMapping;
 public class ImageController {
 
    private final ImageService imageService;
-   private final ImageToImageDto imageToImageDto;
 
    public ImageController(
-         ImageToImageDto imageToImageDto,
          ImageService imageService) {
       this.imageService = imageService;
-      this.imageToImageDto = imageToImageDto;
    }
 
    @GetMapping("")
-   public MyResponse getAllImage() {
-      List<Image> images = this.imageService.findAll();
+   public MyResponse getAllImage(
+         @RequestParam(value = "page", required = false, defaultValue = "0") int page) {
+      ImageResponse imageResponse = this.imageService.findAll(page);
 
-      List<ImageDto> imagesDto = new ArrayList<>();
-
-      for (Image image : images) {
-         ImageDto imageDto = this.imageToImageDto.convert(image);
-         imagesDto.add(imageDto);
-      }
-
-      Map<String, Object> result = new HashMap<>();
-      result.put("images", imagesDto);
-      result.put("page", 1);
-      result.put("pageSize", 10);
-      result.put("count", 99);
-
-      return new MyResponse(true, "Get all images successful", 200, result);
+      return new MyResponse(true, "Get all images successful", 200, imageResponse);
 
    }
 
    @PostMapping("")
-   // @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+   @PreAuthorize("hasAuthority('ROLE_ADMIN')")
    public MyResponse save(@RequestPart("image") MultipartFile multipartFile) throws IOException {
 
       Image image = this.imageService.save(multipartFile);

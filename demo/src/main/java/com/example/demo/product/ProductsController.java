@@ -33,11 +33,21 @@ public class ProductsController {
             @RequestParam(value = "page", defaultValue = "0", required = false) int page,
             @RequestParam(value = "brandID", required = false) List<String> brandID,
             @RequestParam(value = "pageSize", required = false, defaultValue = "2") int pageSize,
+            @RequestParam(value = "column", required = false, defaultValue = "2") String column,
+            @RequestParam(value = "type", required = false, defaultValue = "2") String type,
+            @RequestParam(value = "price", required = false, defaultValue = "2") List<String> price,
             @RequestParam(value = "categoryID", required = false) Integer categoryID) {
 
         System.out.println(">>> check params brandID: " + brandID + ", categoryID: " + categoryID);
 
-        ProductResponse productResponse = this.productService.findAll(page, pageSize, categoryID, brandID);
+        ProductResponse productResponse = this.productService.findAll(
+                page,
+                pageSize,
+                categoryID,
+                brandID,
+                column,
+                type,
+                price);
 
         return new MyResponse(true, "Get all product successful", 200, productResponse);
     }
@@ -46,9 +56,11 @@ public class ProductsController {
     public MyResponse getMethodName(
             @RequestParam(value = "q", required = true) String q,
             @RequestParam(value = "pageSize", required = false, defaultValue = "2") int pageSize,
+            @RequestParam(value = "column", required = false, defaultValue = "2") String column,
+            @RequestParam(value = "type", required = false, defaultValue = "2") String type,
             @RequestParam(value = "page", required = false, defaultValue = "0") int page) {
 
-        ProductResponse productResponse = this.productService.search(q, page, pageSize);
+        ProductResponse productResponse = this.productService.search(q, page, pageSize, column, type);
         return new MyResponse(true, "Get all product successful", 200, productResponse);
     }
 

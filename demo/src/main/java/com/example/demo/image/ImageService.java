@@ -1,13 +1,22 @@
 package com.example.demo.image;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.example.demo.image.converter.ImageToImageDto;
+import com.example.demo.image.dto.ImageDto;
+import com.example.demo.image.dto.ImageResponse;
 import com.example.demo.image.entity.Image;
+import com.example.demo.product.dto.ProductDTO;
+import com.example.demo.product.entity.Product;
 import com.example.demo.system.exception.ObjectNotFoundException;
 
 @Service
@@ -17,19 +26,41 @@ public class ImageService {
 
    private final CloudinaryService cloudinaryService;
 
+   private final ImageToImageDto imageToImageDto;
+
    public ImageService(
+         ImageToImageDto imageToImageDto,
          CloudinaryService cloudinaryService,
          ImageRepository imageRepository) {
       this.imageRepository = imageRepository;
       this.cloudinaryService = cloudinaryService;
+      this.imageToImageDto = imageToImageDto;
    }
 
-   public List<Image> findAll() {
+   public ImageResponse findAll(int page) {
+      Pageable pageable = PageRequest.of(page, 12);
+      Page<Image> imagePage = this.imageRepository.findAll(pageable);
 
-      return this.imageRepository.findAll();
+      List<Image> images = imagePage.getContent();
+
+      List<ImageDto> imagesDto = new ArrayList<>();
+      for (Image image : images) {
+         ImageDto imageDto = this.imageToImageDto.convert(image);
+         imagesDto.add(imageDto);
+      }
+
+      ImageResponse res = new ImageResponse();
+
+      res.setImages(imagesDto);
+      res.setPage(page);
+      res.setPageSize(12);
+      res.setCount((int) imagePage.getTotalElements());
+      res.setIsLast(imagePage.isLast());
+
+      return res;
    }
 
-   public Image save(MultipartFile multipartFile) throws  IOException {
+   public Image save(MultipartFile multipartFile) throws IOException {
       String imageDataUri = this.cloudinaryService.convertFileToDateURI(multipartFile);
       Map<?, ?> result = this.cloudinaryService.upload(imageDataUri);
 
