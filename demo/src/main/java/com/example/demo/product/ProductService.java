@@ -32,16 +32,17 @@ public class ProductService {
         this.productToProductDto = productToProductDto;
     }
 
-    public ProductResponse findAll(int page, Integer categoryID, List<String> BrandID) {
+    public ProductResponse findAll(int page, int pageSize, Integer categoryID, List<String> brandID) {
 
         Pageable pageable = PageRequest.of(page, 2);
         Page<Product> products;
 
-        if (categoryID == null) {
+        if (categoryID == null)
             products = this.productRepository.findAll(pageable);
-        } else {
-            products = this.productRepository.findAllWithParams(pageable, categoryID, BrandID);
-        }
+        else if (brandID != null)
+            products = this.productRepository.findAllWithCategoryAndBrand(pageable, categoryID, brandID);
+        else
+            products = this.productRepository.findAllWithCategory(pageable, categoryID);
 
         List<Product> listOfProducts = products.getContent();
 
@@ -55,7 +56,8 @@ public class ProductService {
                 products.getNumber(),
                 products.getTotalElements(),
                 categoryID,
-                BrandID,
+                6,
+                brandID,
                 new ArrayList<String>(),
                 products.isLast());
 
@@ -63,7 +65,7 @@ public class ProductService {
 
     }
 
-    public ProductResponse search(String keyword, int page) {
+    public ProductResponse search(String keyword, int page, int pageSize) {
         Pageable pageable = PageRequest.of(page, 2);
         Page<Product> productPage = this.productRepository.findByKeyword(pageable, keyword);
 
@@ -79,6 +81,7 @@ public class ProductService {
                 productPage.getNumber(),
                 productPage.getTotalElements(),
                 null,
+                pageSize,
                 new ArrayList<>(),
                 new ArrayList<>(),
                 productPage.isLast());

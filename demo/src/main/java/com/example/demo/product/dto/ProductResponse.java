@@ -7,8 +7,9 @@ public record ProductResponse(
       Integer page,
       Long count,
       Integer categoryID,
-      List<String> BrandID,
+      Integer pageSize,
+      List<String> brandID,
       List<String> sort,
-      boolean last
+      boolean isLast
 ) {}
                                                      

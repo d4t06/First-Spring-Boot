@@ -32,11 +32,12 @@ public class ProductsController {
     public MyResponse findAll(
             @RequestParam(value = "page", defaultValue = "0", required = false) int page,
             @RequestParam(value = "brandID", required = false) List<String> brandID,
+            @RequestParam(value = "pageSize", required = false, defaultValue = "2") int pageSize,
             @RequestParam(value = "categoryID", required = false) Integer categoryID) {
 
         System.out.println(">>> check params brandID: " + brandID + ", categoryID: " + categoryID);
 
-        ProductResponse productResponse = this.productService.findAll(page, categoryID, brandID);
+        ProductResponse productResponse = this.productService.findAll(page, pageSize, categoryID, brandID);
 
         return new MyResponse(true, "Get all product successful", 200, productResponse);
     }
@@ -44,9 +45,10 @@ public class ProductsController {
     @GetMapping("/search")
     public MyResponse getMethodName(
             @RequestParam(value = "q", required = true) String q,
+            @RequestParam(value = "pageSize", required = false, defaultValue = "2") int pageSize,
             @RequestParam(value = "page", required = false, defaultValue = "0") int page) {
 
-        ProductResponse productResponse = this.productService.search(q, page);
+        ProductResponse productResponse = this.productService.search(q, page, pageSize);
         return new MyResponse(true, "Get all product successful", 200, productResponse);
     }
 
