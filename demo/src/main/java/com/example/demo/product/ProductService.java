@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.product.converter.ProductDtoToProduct;
@@ -41,7 +42,21 @@ public class ProductService {
             String type,
             List<String> price) {
 
-        Pageable pageable = PageRequest.of(page, pageSize);
+        Sort sort;
+        Pageable pageable;
+
+        if (column != null && type != null) {
+            if (type.equalsIgnoreCase("asc"))
+                sort = Sort.by(Sort.Direction.ASC, column);
+            else
+                sort = Sort.by(Sort.Direction.DESC, column);
+
+            pageable = PageRequest.of(page, pageSize).withSort(sort);
+        } else {
+
+            pageable = PageRequest.of(page, pageSize);
+        }
+
         Page<Product> productPage;
 
         if (categoryID == null)
