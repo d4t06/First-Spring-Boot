@@ -22,11 +22,11 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Entity
+@Entity(name = "products")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "products", uniqueConstraints = {
+@Table(uniqueConstraints = {
         @UniqueConstraint(name = "product_unique", columnNames = "product_ascii")
 })
 public class Product implements Serializable {

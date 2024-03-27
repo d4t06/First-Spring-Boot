@@ -1,5 +1,7 @@
 package com.example.demo.slider;
 
+import org.springframework.stereotype.Service;
+
 import com.example.demo.slider.converter.SliderDtoToSlider;
 import com.example.demo.slider.converter.SliderImageDtoToSliderImage;
 import com.example.demo.slider.dto.SliderDto;
@@ -10,6 +12,7 @@ import com.example.demo.slider.repository.SliderImageRepository;
 import com.example.demo.slider.repository.SliderRepository;
 import com.example.demo.system.exception.ObjectNotFoundException;
 
+@Service
 public class SliderService {
 
    private final SliderRepository sliderRepository;
@@ -41,9 +44,10 @@ public class SliderService {
    public SliderImage createSliderImage(SliderImageDto sliderImageDto) {
       SliderImage sliderImage = this.sliderImageDtoToSliderImage.convert(sliderImageDto);
       return this.sliderImageRepository.save(sliderImage);
+
    }
 
-   public void deleteImageSlider(long id) {
+   public void deleteSliderImage(long id) {
       this.sliderImageRepository.findById(id)
             .orElseThrow(() -> new ObjectNotFoundException("slider image not found"));
 

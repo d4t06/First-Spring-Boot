@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 
 import com.example.demo.category.converter.CategoryToCategoryDto;
 import com.example.demo.category.dto.CategoryDto;
+import com.example.demo.category.dto.CategorySliderDto;
 import com.example.demo.category.entity.Category;
 import com.example.demo.system.MyResponse;
 
@@ -46,15 +47,24 @@ public class CategoryController {
         return new MyResponse(true, "Get category successful", 200, category);
     }
 
-    @PostMapping()
+    @PostMapping("")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public MyResponse create(@RequestBody CategoryDto dto) {
         Category category = this.categoryService.create(dto);
+        CategoryDto categoryDto = this.categoryToCategoryDto.convert(category);
 
-        return new MyResponse(true, "Add successful", 200, category);
+        return new MyResponse(true, "Add successful", 200, categoryDto);
     }
 
-    @PutMapping()
+    @PostMapping("/sliders")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    public MyResponse createCategorySlider(@RequestBody CategorySliderDto categorySliderDto) {
+        this.categoryService.createCategorySlider(categorySliderDto);
+
+        return new MyResponse(true, "Add category slider successful", 200);
+    }
+
+    @PutMapping("")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public MyResponse update(
             @RequestBody CategoryDto updateDto,

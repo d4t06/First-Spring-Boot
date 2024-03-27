@@ -15,8 +15,6 @@ import com.example.demo.image.converter.ImageToImageDto;
 import com.example.demo.image.dto.ImageDto;
 import com.example.demo.image.dto.ImageResponse;
 import com.example.demo.image.entity.Image;
-import com.example.demo.product.dto.ProductDTO;
-import com.example.demo.product.entity.Product;
 import com.example.demo.system.exception.ObjectNotFoundException;
 
 @Service

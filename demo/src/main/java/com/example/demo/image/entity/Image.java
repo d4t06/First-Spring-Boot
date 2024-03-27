@@ -35,6 +35,7 @@ public class Image {
 
    private int size;
 
+   // if image remove then remove slider image too
    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
    private SliderImage sliderImage;
 

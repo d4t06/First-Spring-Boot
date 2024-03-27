@@ -18,18 +18,22 @@ public class CategoryToCategoryDto implements Converter<Category, CategoryDto> {
 
     private final BrandToBrandDto brandToBrandDto;
 
-    public CategoryToCategoryDto(BrandToBrandDto brandToBrandDto) {
+    private final CategorySliderToCategorySliderDto categorySliderToCategorySliderDto;
+
+    public CategoryToCategoryDto(BrandToBrandDto brandToBrandDto,
+            CategorySliderToCategorySliderDto categorySliderToCategorySliderDto) {
         this.brandToBrandDto = brandToBrandDto;
+        this.categorySliderToCategorySliderDto = categorySliderToCategorySliderDto;
     }
 
-    List<BrandDto> getBrandDtos(List<Brand> brands) {
-        ArrayList<BrandDto> brandDtos = new ArrayList<>();
+    List<BrandDto> getBrandsDto(List<Brand> brands) {
+        ArrayList<BrandDto> brandsDto = new ArrayList<>();
         for (Brand brand : brands) {
             BrandDto brandDto = this.brandToBrandDto.convert(brand);
-            brandDtos.add(brandDto);
+            brandsDto.add(brandDto);
         }
 
-        return brandDtos;
+        return brandsDto;
     }
 
     @Override
@@ -37,10 +41,14 @@ public class CategoryToCategoryDto implements Converter<Category, CategoryDto> {
         CategoryDto categoryDto = new CategoryDto(
                 source.getCategory_ascii(),
                 source.getCategory_name(),
+                source.getIs_show(),
                 source.getId(),
                 source.getBrands().isEmpty()
                         ? new ArrayList<BrandDto>()
-                        : getBrandDtos(source.getBrands()));
+                        : getBrandsDto(source.getBrands()),
+                source.getCategorySlider() != null
+                        ? this.categorySliderToCategorySliderDto.convert(source.getCategorySlider())
+                        : null);
         return categoryDto;
     }
 }

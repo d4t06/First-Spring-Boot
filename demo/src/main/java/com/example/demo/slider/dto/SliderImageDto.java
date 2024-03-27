@@ -1,14 +1,18 @@
 package com.example.demo.slider.dto;
 
-import jakarta.validation.constraints.NotEmpty;
+import com.example.demo.image.dto.ImageDto;
 import jakarta.validation.constraints.NotNull;
 
 public record SliderImageDto (
+   Long id,
+
    @NotNull(message = "slider_id is required")
    Long slider_id,
 
-   @NotEmpty(message = "image_url is required")
-   String image_url,
+   @NotNull(message = "image_id is required")
+   Long image_id,
 
-   String link_to
+   String link_to,
+
+   ImageDto image
 ) {}
