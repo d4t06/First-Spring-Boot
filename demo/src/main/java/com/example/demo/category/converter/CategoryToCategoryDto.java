@@ -12,6 +12,9 @@ import com.example.demo.brand.dto.BrandDto;
 import com.example.demo.brand.entity.Brand;
 import com.example.demo.category.dto.CategoryDto;
 import com.example.demo.category.entity.Category;
+import com.example.demo.price_range.converter.PriceRangeToPriceRangeDto;
+import com.example.demo.price_range.dto.PriceRangeDto;
+import com.example.demo.price_range.entity.PriceRange;
 
 @Component
 public class CategoryToCategoryDto implements Converter<Category, CategoryDto> {
@@ -20,10 +23,15 @@ public class CategoryToCategoryDto implements Converter<Category, CategoryDto> {
 
     private final CategorySliderToCategorySliderDto categorySliderToCategorySliderDto;
 
-    public CategoryToCategoryDto(BrandToBrandDto brandToBrandDto,
+    private final PriceRangeToPriceRangeDto priceRangeToPriceRangeDto;
+
+    public CategoryToCategoryDto(
+            PriceRangeToPriceRangeDto priceRangeToPriceRangeDto,
+            BrandToBrandDto brandToBrandDto,
             CategorySliderToCategorySliderDto categorySliderToCategorySliderDto) {
         this.brandToBrandDto = brandToBrandDto;
         this.categorySliderToCategorySliderDto = categorySliderToCategorySliderDto;
+        this.priceRangeToPriceRangeDto = priceRangeToPriceRangeDto;
     }
 
     List<BrandDto> getBrandsDto(List<Brand> brands) {
@@ -36,6 +44,16 @@ public class CategoryToCategoryDto implements Converter<Category, CategoryDto> {
         return brandsDto;
     }
 
+    List<PriceRangeDto> getPriceRangeDto(List<PriceRange> priceRanges) {
+        ArrayList<PriceRangeDto> priceRangesDto = new ArrayList<>();
+        for (PriceRange priceRange : priceRanges) {
+            PriceRangeDto priceRangeDto = this.priceRangeToPriceRangeDto.convert(priceRange);
+            priceRangesDto.add(priceRangeDto);
+        }
+
+        return priceRangesDto;
+    }
+
     @Override
     public CategoryDto convert(Category source) {
         CategoryDto categoryDto = new CategoryDto(
@@ -46,6 +64,11 @@ public class CategoryToCategoryDto implements Converter<Category, CategoryDto> {
                 source.getBrands().isEmpty()
                         ? new ArrayList<BrandDto>()
                         : getBrandsDto(source.getBrands()),
+
+                source.getPriceRanges().isEmpty()
+                        ? new ArrayList<PriceRangeDto>()
+                        : getPriceRangeDto(source.getPriceRanges()),
+                        
                 source.getCategorySlider() != null
                         ? this.categorySliderToCategorySliderDto.convert(source.getCategorySlider())
                         : null);

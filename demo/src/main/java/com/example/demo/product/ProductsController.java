@@ -32,10 +32,10 @@ public class ProductsController {
             @RequestParam(value = "pageSize", required = false, defaultValue = "2") int pageSize,
             @RequestParam(value = "column", required = false, defaultValue = "2") String column,
             @RequestParam(value = "type", required = false, defaultValue = "2") String type,
-            @RequestParam(value = "price", required = false, defaultValue = "2") List<String> price,
+            @RequestParam(value = "price", required = false) List<String> price,
             @RequestParam(value = "categoryID", required = false) Integer categoryID) {
 
-        System.out.println(">>> check params brandID: " + brandID + ", categoryID: " + categoryID);
+        System.out.println(">>> check params brandID: " + brandID + ", categoryID: " + categoryID + ", price: " + price);
 
         ProductResponse productResponse = this.productService.findAll(
                 page,

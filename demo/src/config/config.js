@@ -3,7 +3,7 @@ require("dotenv").config({ path: `../.env.local`, override: true });
 module.exports = {
    development: {
       username: "root",
-      password: "",
+      password: "root",
       database: "learn_spring",
       host: "localhost",
       port: 3306,
