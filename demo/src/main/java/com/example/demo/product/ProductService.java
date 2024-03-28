@@ -2,11 +2,15 @@ package com.example.demo.product;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import com.example.demo.product.converter.ProductDtoToProduct;
 import com.example.demo.product.converter.ProductToProductDto;
@@ -82,7 +86,7 @@ public class ProductService {
         res.setCount(productPage.getTotalElements());
 
         res.setBrandID(brandID);
-        res.setCategoryID(categoryID);
+        res.setCategoryID("s");
         res.setIsLast(productPage.isLast());
         res.setColumn(column);
         res.setType(type);
@@ -92,13 +96,39 @@ public class ProductService {
 
     }
 
-    public ProductResponse search(String keyword,
+    public ProductResponse findAllByCriteria(
+            ProductFilter filter,
             int page,
             int pageSize,
             String column,
             String type) {
-        Pageable pageable = PageRequest.of(page, 2);
-        Page<Product> productPage = this.productRepository.findByKeyword(pageable, keyword);
+
+        Sort sort;
+        Pageable pageable;
+
+        if (column != null && type != null) {
+            if (type.equalsIgnoreCase("asc"))
+                sort = Sort.by(Sort.Direction.ASC, column);
+            else
+                sort = Sort.by(Sort.Direction.DESC, column);
+
+            pageable = PageRequest.of(page, pageSize).withSort(sort);
+        } else {
+
+            pageable = PageRequest.of(page, pageSize);
+        }
+
+        Specification<Product> spec = Specification.where(null);
+
+        if (StringUtils.hasLength(filter.categoryID())) {
+            spec.and(ProductSpecs.hasCategoryID(filter.categoryID()));
+        }
+
+        if (!filter.brandIDs().isEmpty()) {
+            spec.and(ProductSpecs.hasBrandIDs(filter.brandIDs()));
+        }
+
+        Page<Product> productPage = this.productRepository.findAll(spec, pageable);
 
         List<Product> products = productPage.getContent();
 
@@ -115,13 +145,12 @@ public class ProductService {
         res.setCount(productPage.getTotalElements());
 
         res.setBrandID(new ArrayList<>());
-        res.setCategoryID(null);
+        res.setCategoryID(filter.categoryID());
         res.setIsLast(productPage.isLast());
         res.setColumn(column);
         res.setType(type);
 
         return res;
-
     }
 
     public Product findOne(String product_ascii) {

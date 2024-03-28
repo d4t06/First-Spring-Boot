@@ -1,6 +1,15 @@
 ### 
 GET http://localhost:8080/api/categories
 
+### 
+POST http://localhost:8080/api/products/search
+Content-Type: application/json
+
+{
+    "category_id": "9",
+    "brand_id": "[1,2]"
+}
+
 
 ###
 POST http://localhost:8080/api/brands

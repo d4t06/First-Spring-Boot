@@ -12,7 +12,7 @@ public class ProductResponse {
       List<ProductDTO> products;
       Integer page;
       Long count;
-      Integer categoryID;
+      String categoryID;
       Integer pageSize;
       List<String> brandID;
       String column;

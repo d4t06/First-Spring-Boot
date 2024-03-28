@@ -1,6 +1,8 @@
 package com.example.demo.product;
 
 import java.util.List;
+import java.util.Map;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -35,7 +37,8 @@ public class ProductsController {
             @RequestParam(value = "price", required = false) List<String> price,
             @RequestParam(value = "categoryID", required = false) Integer categoryID) {
 
-        System.out.println(">>> check params brandID: " + brandID + ", categoryID: " + categoryID + ", price: " + price);
+        System.out
+                .println(">>> check params brandID: " + brandID + ", categoryID: " + categoryID + ", price: " + price);
 
         ProductResponse productResponse = this.productService.findAll(
                 page,
@@ -49,16 +52,19 @@ public class ProductsController {
         return new MyResponse(true, "Get all product successful", 200, productResponse);
     }
 
-    @GetMapping("/search")
-    public MyResponse getMethodName(
-            @RequestParam(value = "q", required = true) String q,
-            @RequestParam(value = "pageSize", required = false, defaultValue = "2") int pageSize,
-            @RequestParam(value = "column", required = false, defaultValue = "2") String column,
-            @RequestParam(value = "type", required = false, defaultValue = "2") String type,
-            @RequestParam(value = "page", required = false, defaultValue = "0") int page) {
+    @PostMapping("/search")
+    public MyResponse findAllWithCriteria(
+            @RequestBody ProductFilter filter,
+            @RequestParam(value = "type", required = false) String type,
+            @RequestParam(value = "column", required = false) String column,
+            @RequestParam(value = "page", required = false, defaultValue = "0") int page,
+            @RequestParam(value = "pageSize", required = false, defaultValue = "0") int pageSize) {
 
-        ProductResponse productResponse = this.productService.search(q, page, pageSize, column, type);
-        return new MyResponse(true, "Get all product successful", 200, productResponse);
+        // ProductResponse productResponse = this.productService.findAllByCriteria(filter, page, pageSize, column, type);
+
+        System.out.println("check filter" + filter);
+
+        return new MyResponse(true, "Get all product successful", 200);
     }
 
     @GetMapping("/{product_ascii}")
