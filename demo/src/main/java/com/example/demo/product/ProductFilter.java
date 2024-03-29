@@ -2,7 +2,8 @@ package com.example.demo.product;
 
 import java.util.List;
 
-public record ProductFilter (
-    List<String> brand_id,
-    String category_id
-) {}
+public record ProductFilter(
+        String category_id,
+        List<String> brand_id,
+        List<String> price) {
+}

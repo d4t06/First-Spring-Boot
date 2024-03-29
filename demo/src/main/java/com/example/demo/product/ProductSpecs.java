@@ -14,11 +14,22 @@ public class ProductSpecs {
         // return criteriaBuilder.equal(root.get("category_id"), providedCategoryID);
         // }
         // };
-        return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("category_id"), providedCategoryID);
+        return (root, query, criteriaBuilder) -> criteriaBuilder
+                .equal(root.get("categoryId"), providedCategoryID);
+    }
+
+    public static Specification<Product> containName(String name) {
+        return (root, query, criteriaBuilder) -> criteriaBuilder
+                .like(criteriaBuilder.lower(root.get("product_name")), "%" + name.toLowerCase() + "%");
     }
 
     public static Specification<Product> hasBrandIDs(List<String> brandIDs) {
-        return (root, query, criteriaBuilder) -> criteriaBuilder.in(root.get("brand_id")).value(brandIDs);
+        return (root, query, criteriaBuilder) -> criteriaBuilder
+                .in(root.get("brandId")).value(brandIDs);
     }
 
+    public static Specification<Product> betweenPrice(Integer fromPrice, Integer toPrice) {
+        return (root, query, criteriaBuilder) -> criteriaBuilder
+                .between(root.<Integer>get("price"), fromPrice, toPrice);
+    }
 }

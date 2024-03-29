@@ -8,6 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Order;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -37,95 +38,24 @@ public class ProductService {
         this.productToProductDto = productToProductDto;
     }
 
-    public ProductResponse findAll(
-            int page,
-            int pageSize,
-            Integer categoryID,
-            List<String> brandID,
-            String column,
-            String type,
-            List<String> price) {
-
-        Sort sort;
-        Pageable pageable;
-
-        if (column != null && type != null) {
-            if (type.equalsIgnoreCase("asc"))
-                sort = Sort.by(Sort.Direction.ASC, column);
-            else
-                sort = Sort.by(Sort.Direction.DESC, column);
-
-            pageable = PageRequest.of(page, pageSize).withSort(sort);
-        } else {
-
-            pageable = PageRequest.of(page, pageSize);
-        }
-
-        Page<Product> productPage;
-
-        if (categoryID == null)
-            productPage = this.productRepository.findAll(pageable);
-        else if (brandID != null)
-            productPage = this.productRepository.findAllWithCategoryAndBrand(pageable, categoryID, brandID);
-        else
-            productPage = this.productRepository.findAllWithCategory(pageable, categoryID);
-
-        List<Product> listOfProducts = productPage.getContent();
-
-        List<ProductDTO> productsDTO = new ArrayList<>();
-        for (Product product : listOfProducts) {
-            ProductDTO productDTO = this.productToProductDto.convert(product);
-            productsDTO.add(productDTO);
-        }
-
-        ProductResponse res = new ProductResponse();
-
-        res.setProducts(productsDTO);
-        res.setPage(page);
-        res.setPageSize(pageSize);
-        res.setCount(productPage.getTotalElements());
-
-        res.setBrandID(brandID);
-        res.setCategoryID("s");
-        res.setIsLast(productPage.isLast());
-        res.setColumn(column);
-        res.setType(type);
-        res.setPrice(price);
-
-        return res;
-
-    }
-
     public ProductResponse findAllByCriteria(
-            ProductFilter filter,
-            int page,
-            int pageSize,
-            String column,
-            String type) {
-
-        Sort sort;
-        Pageable pageable;
-
-        if (column != null && type != null) {
-            if (type.equalsIgnoreCase("asc"))
-                sort = Sort.by(Sort.Direction.ASC, column);
-            else
-                sort = Sort.by(Sort.Direction.DESC, column);
-
-            pageable = PageRequest.of(page, pageSize).withSort(sort);
-        } else {
-
-            pageable = PageRequest.of(page, pageSize);
-        }
+            Pageable pageable,
+            ProductFilter filter) {
 
         Specification<Product> spec = Specification.where(null);
+        ProductResponse res = new ProductResponse();
 
-        if (StringUtils.hasLength(filter.categoryID())) {
-            spec.and(ProductSpecs.hasCategoryID(filter.categoryID()));
+        if (StringUtils.hasLength(filter.category_id())) {
+            spec = spec.and(ProductSpecs.hasCategoryID(filter.category_id()));
         }
 
-        if (!filter.brandIDs().isEmpty()) {
-            spec.and(ProductSpecs.hasBrandIDs(filter.brandIDs()));
+        if (filter.brand_id() != null) {
+            spec = spec.and(ProductSpecs.hasBrandIDs(filter.brand_id()));
+        }
+
+        if (filter.price() != null) {
+            spec = spec.and(ProductSpecs.betweenPrice(Integer.parseInt(filter.price().get(0)) * (int)Math.pow(10, 6),
+                    Integer.parseInt(filter.price().get(1)) * (int)Math.pow(10, 6)));
         }
 
         Page<Product> productPage = this.productRepository.findAll(spec, pageable);
@@ -138,19 +68,34 @@ public class ProductService {
             productsDTO.add(productDTO);
         }
 
-        ProductResponse res = new ProductResponse();
         res.setProducts(productsDTO);
-        res.setPage(page);
-        res.setPageSize(pageSize);
+        res.setPage(pageable.getPageNumber());
+        res.setSize(2);
         res.setCount(productPage.getTotalElements());
 
-        res.setBrandID(new ArrayList<>());
-        res.setCategoryID(filter.categoryID());
-        res.setIsLast(productPage.isLast());
-        res.setColumn(column);
-        res.setType(type);
+        res.setBrand_id(filter.brand_id());
+        res.setCategory_id(filter.category_id());
+        res.setIs_last(productPage.isLast());
+        res.setPrice(filter.price());
+
+        if (pageable.getSort().isSorted()) {
+            Order order = pageable.getSort().toList().get(0);
+
+            res.setColumn(order.getProperty());
+            res.setType(order.getDirection().name());
+        }
 
         return res;
+    }
+
+    public List<ProductDTO> search(String key) {
+
+        Specification<Product> spec = Specification.where(ProductSpecs.containName(key));
+
+        List<Product> products = this.productRepository.findAll(spec);
+        List<ProductDTO> productDTOs = products.stream().map(p -> this.productToProductDto.convert(p)).toList();
+
+        return productDTOs;
     }
 
     public Product findOne(String product_ascii) {
