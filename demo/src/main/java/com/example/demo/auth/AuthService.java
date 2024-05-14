@@ -26,7 +26,7 @@ public class AuthService {
     private final UserService userService;
 
     public static int REFRESH_TOKEN_EXPIRE = 60 * 60 * 24;
-    public static int ACCESS_TOKEN_EXPIRE = 15;
+    public static int ACCESS_TOKEN_EXPIRE = 60 * 60 * 12;
 
     public AuthService(
             JwtProvider jwtProvider,
@@ -61,7 +61,7 @@ public class AuthService {
         cookie.setHttpOnly(true); // must enable to make sure that token can not be access
         cookie.setMaxAge(24 * 60 * 60 * 1000); // one day
         // store refresh token to client browser cookie
-        res.addCookie(cookie);  
+        res.addCookie(cookie);
 
         // get user role as string for generate access token
         String authorities = this.jwtProvider.getJoinAuthoritiesFromPrefix(authentication.getAuthorities());
@@ -75,7 +75,7 @@ public class AuthService {
         return resultMap;
     }
 
-    public Map<String, Object>  refreshToken(
+    public Map<String, Object> refreshToken(
             String refreshToken) {
 
         String username = this.jwtProvider.parserUsernameFromToken(refreshToken);

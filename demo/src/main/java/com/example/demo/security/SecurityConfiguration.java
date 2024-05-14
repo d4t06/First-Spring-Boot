@@ -10,6 +10,7 @@ import java.time.Duration;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -76,17 +77,14 @@ public class SecurityConfiguration {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
                 .authorizeHttpRequests(req -> req
-                        .anyRequest().permitAll()
-                )
+                        .anyRequest().permitAll())
                 .csrf(csrf -> csrf.disable())
+                .cors(Customizer.withDefaults())
                 .httpBasic(httpBasic -> httpBasic.authenticationEntryPoint(this.customAuthenticationEntryPoint))
                 .oauth2ResourceServer(oauth2ResourceServer -> oauth2ResourceServer
-                        .jwt(jwt -> jwt
-                                .jwtAuthenticationConverter((this.jwtAuthenticationConverter()))
-                                .decoder(this.jwtDecoder())
-                        )
                         .authenticationEntryPoint(this.customTokenAuthenticationEntryPoint)
-                        .accessDeniedHandler(this.customTokenAccessDeniedEntryPoint))
+                        .accessDeniedHandler(this.customTokenAccessDeniedEntryPoint)
+                        .jwt())
                 .sessionManagement(
                         sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .build();
@@ -125,6 +123,7 @@ public class SecurityConfiguration {
         return jwtDecoder;
     }
 
+    @Bean
     public JwtAuthenticationConverter jwtAuthenticationConverter() {
 
         JwtGrantedAuthoritiesConverter jwtGrantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
