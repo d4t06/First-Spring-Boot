@@ -60,6 +60,8 @@ public class AuthService {
         Cookie cookie = new Cookie("jwt", refreshToken);
         cookie.setHttpOnly(true); // must enable to make sure that token can not be access
         cookie.setMaxAge(24 * 60 * 60 * 1000); // one day
+        cookie.setAttribute("SameSite", "None"); // fix cookie error in chrome
+        cookie.setSecure(true); // for SameSite=None
         // store refresh token to client browser cookie
         res.addCookie(cookie);
 

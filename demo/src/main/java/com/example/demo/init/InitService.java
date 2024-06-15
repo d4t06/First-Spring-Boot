@@ -29,7 +29,7 @@ public class InitService {
             return new MyResponse(false, "Username has taken", HttpStatus.CONFLICT.value());
 
         User adminUser = this.userService.init(userDto);
-        CategoryDto home = new CategoryDto("home", "home", 0, null, null, null, null);
+        CategoryDto home = new CategoryDto(null, "home", "home", "", 0, null, null, null, null);
 
         this.categoryService.create(home);
 

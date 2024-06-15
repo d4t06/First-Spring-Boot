@@ -2,14 +2,12 @@ package com.example.demo.user.dto;
 
 import jakarta.validation.constraints.NotEmpty;
 
-public record UserDto (
-    Long id,
+public record UserDto(
+        Long id,
 
-    @NotEmpty(message = "Username is required")
-    String username,
+        @NotEmpty(message = "Username is required") String username,
 
-    @NotEmpty(message = "Password are required")
-    String password,
+        @NotEmpty(message = "Password are required") String password,
 
-    String role
-) {}
+        String role) {
+}

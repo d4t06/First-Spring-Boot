@@ -18,7 +18,6 @@ public class ProductDtoToProduct implements Converter<ProductDTO, Product> {
         product.setBrandId(source.brand_id());
         product.setCategoryId(source.category_id());
         product.setImage_url(source.image_url());
-        product.setPrice(source.price());
         product.setInstallment(source.installment() || false);
 
         return product;

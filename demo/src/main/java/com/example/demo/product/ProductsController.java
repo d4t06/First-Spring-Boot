@@ -1,14 +1,15 @@
 package com.example.demo.product;
 
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import com.example.demo.product.converter.ProductToProductDto;
+
+import com.example.demo.product.converter.ProductToProductDetailDto;
 import com.example.demo.product.dto.ProductDTO;
+import com.example.demo.product.dto.ProductDetailDto;
 import com.example.demo.product.dto.ProductResponse;
 import com.example.demo.product.entity.Product;
 import com.example.demo.system.MyResponse;
@@ -21,44 +22,15 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class ProductsController {
 
     private final ProductService productService;
-    private final ProductToProductDto productToProductDto;
+    private final ProductToProductDetailDto productToProductDetailDto;
 
     public ProductsController(
             ProductService productService,
-            ProductToProductDto productToProductDto) {
+            ProductToProductDetailDto productToProductDetailDto) {
         this.productService = productService;
-        this.productToProductDto = productToProductDto;
+        // this.productToProductDto = productToProductDto;
+        this.productToProductDetailDto = productToProductDetailDto;
     }
-
-    // @GetMapping()
-    // public MyResponse findAll(
-    // @RequestParam(value = "page", defaultValue = "0", required = false) int page,
-    // @RequestParam(value = "brandID", required = false) List<String> brandID,
-    // @RequestParam(value = "pageSize", required = false, defaultValue = "2") int
-    // pageSize,
-    // @RequestParam(value = "column", required = false, defaultValue = "2") String
-    // column,
-    // @RequestParam(value = "type", required = false, defaultValue = "2") String
-    // type,
-    // @RequestParam(value = "price", required = false) List<String> price,
-    // @RequestParam(value = "categoryID", required = false) Integer categoryID) {
-
-    // System.out
-    // .println(">>> check params brandID: " + brandID + ", categoryID: " +
-    // categoryID + ", price: " + price);
-
-    // ProductResponse productResponse = this.productService.findAll(
-    // page,
-    // pageSize,
-    // categoryID,
-    // brandID,
-    // column,
-    // type,
-    // price);
-
-    // return new MyResponse(true, "Get all product successful", 200,
-    // productResponse);
-    // }
 
     @PostMapping("/search")
     public MyResponse findAllWithCriteria(
@@ -71,7 +43,7 @@ public class ProductsController {
     }
 
     @GetMapping("/search")
-    public MyResponse getMethodName(@RequestParam(name = "q",  required = true) String q) {
+    public MyResponse getMethodName(@RequestParam(name = "q", required = true) String q) {
         List<ProductDTO> productDTOs = this.productService.search(q);
 
         return new MyResponse(true, "search product successful", 200, productDTOs);
@@ -80,9 +52,9 @@ public class ProductsController {
     @GetMapping("/{product_ascii}")
     public MyResponse findOne(@PathVariable String product_ascii) {
         Product product = this.productService.findOne(product_ascii);
-        ProductDTO productDTO = this.productToProductDto.convert(product);
+        ProductDetailDto productDetailDto = this.productToProductDetailDto.convert(product);
 
-        return new MyResponse(true, "Get one product successful", 200, productDTO);
+        return new MyResponse(true, "Get one product successful", 200, productDetailDto);
     }
 
     @PostMapping("")
@@ -104,12 +76,12 @@ public class ProductsController {
         return new MyResponse(true, "Update product successful", 200);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/{productAscii}")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public MyResponse delete(
-            @PathVariable Long id) {
+            @PathVariable String productAscii) {
 
-        this.productService.delete(id);
+        this.productService.delete(productAscii);
         return new MyResponse(true, "Delete product successful", 200);
 
     }

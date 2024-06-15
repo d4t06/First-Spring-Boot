@@ -3,8 +3,7 @@ require("dotenv").config({ path: `../.env.local`, override: true });
 module.exports = {
    development: {
       username: "root",
-      password: "root",
-      database: "learn_spring",
+      database: "vue-mobile",
       host: "localhost",
       port: 3306,
       dialect: "mysql",

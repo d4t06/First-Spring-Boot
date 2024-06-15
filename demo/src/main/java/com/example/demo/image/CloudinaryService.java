@@ -10,19 +10,19 @@ import org.springframework.web.multipart.MultipartFile;
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
 
-import io.github.cdimascio.dotenv.Dotenv;
+// import io.github.cdimascio.dotenv.Dotenv;
 
 @Service
 public class CloudinaryService {
 
    Cloudinary cloudinary;
 
-   Dotenv dotenv = Dotenv.configure().filename(".env.local").load();
+   // Dotenv dotenv = Dotenv.configure().filename(".env.local").load();
 
    Map<?, ?> params = ObjectUtils.asMap(
-         "cloud_name", dotenv.get("CLOUD_NAME"),
-         "api_key", dotenv.get("CLOUD_API_KEY"),
-         "api_secret", dotenv.get("CLOUD_API_SECRET"));
+      "cloud_name", "dalg3ayqh",
+      "api_key", "416638315783794",
+      "api_secret", "rPRSYlwMg4zMLD9QbCyd2gu2HCk");
 
    Map<?, ?> uploadParams = ObjectUtils.asMap(
          "folder", "spring-boot",

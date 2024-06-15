@@ -2,14 +2,21 @@ package com.example.demo.product;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Order;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import com.example.demo.default_storage.DefaultStorageRepository;
+import com.example.demo.default_storage.entity.DefaultStorage;
+import com.example.demo.description.ProductDescService;
+import com.example.demo.description.dto.ProductDescDto;
 import com.example.demo.product.converter.ProductDtoToProduct;
 import com.example.demo.product.converter.ProductToProductDto;
 import com.example.demo.product.dto.ProductDTO;
@@ -26,13 +33,21 @@ public class ProductService {
 
     private final ProductToProductDto productToProductDto;
 
+    private final ProductDescService productDescService;
+
+    private final DefaultStorageRepository defaultStorageRepository;
+
     public ProductService(
             ProductToProductDto productToProductDto,
             ProductRepository productRepository,
+            ProductDescService productDescService,
+            DefaultStorageRepository defaultStorageRepository,
             ProductDtoToProduct productDtoToProduct) {
         this.productRepository = productRepository;
         this.productDtoToProduct = productDtoToProduct;
         this.productToProductDto = productToProductDto;
+        this.productDescService = productDescService;
+        this.defaultStorageRepository = defaultStorageRepository;
     }
 
     public ProductResponse findAllByCriteria(
@@ -51,11 +66,30 @@ public class ProductService {
         }
 
         if (filter.price() != null) {
-            spec = spec.and(ProductSpecs.betweenPrice(Integer.parseInt(filter.price().get(0)) * (int)Math.pow(10, 6),
-                    Integer.parseInt(filter.price().get(1)) * (int)Math.pow(10, 6)));
+            spec = spec.and(ProductSpecs.betweenPrice(Integer.parseInt(filter.price().get(0)) * (int) Math.pow(10, 6),
+                    Integer.parseInt(filter.price().get(1)) * (int) Math.pow(10, 6)));
         }
 
-        Page<Product> productPage = this.productRepository.findAll(spec, pageable);
+        // Sort sort = pageable.getSort();
+
+        // Sort sort = Sort.by(pageable.getSort().get()
+        // .map(order -> order.getProperty().equals("price"))
+        // ? Sort.Order
+        // .by("defaultStorage.storage.defaultStorageCombine.combine.price",
+        // order.get())
+        // .with(order.getDirection())
+        // : order)
+        // .collect(Collectors.toList());
+
+        Sort sort = Sort.by(
+                pageable.getSort().get()
+                        .map(order -> order.getProperty().equals("price") ? Sort.Order
+                                .by("defaultStorage.storage.defaultStorageCombine.combine.price")
+                                .with(order.getDirection()) : order)
+                        .collect(Collectors.toList()));
+
+        Page<Product> productPage = this.productRepository.findAll(spec, PageRequest.of(
+                pageable.getPageNumber(), pageable.getPageSize(), sort));
 
         List<Product> products = productPage.getContent();
 
@@ -106,18 +140,29 @@ public class ProductService {
 
     public Product create(ProductDTO createProductDTO) {
         Product product = this.productDtoToProduct.convert(createProductDTO);
-        return this.productRepository.save(product);
+
+        Product newProduct = this.productRepository.save(product);
+
+        // add description
+        ProductDescDto descDto = new ProductDescDto(newProduct.getProductAscii(), newProduct.getProduct_name());
+        this.productDescService.add(descDto);
+
+        // add default storage
+        DefaultStorage defaultStorage = new DefaultStorage();
+        defaultStorage.setProductAscii(newProduct.getProductAscii());
+        this.defaultStorageRepository.save(defaultStorage);
+
+        return newProduct;
     }
 
     public Product update(Long id, ProductDTO updateDto) {
-        return this.productRepository.findById(id)
+        return this.productRepository.findById(updateDto.product_ascii())
                 .map(oldProduct -> {
                     oldProduct.setBrandId(updateDto.brand_id());
                     oldProduct.setCategoryId(updateDto.category_id());
                     oldProduct.setProductAscii(updateDto.product_ascii());
                     oldProduct.setProduct_name(updateDto.product_name());
                     oldProduct.setImage_url(updateDto.image_url());
-                    oldProduct.setPrice(updateDto.price());
 
                     Product product = this.productRepository.save(oldProduct);
                     return product;
@@ -126,11 +171,12 @@ public class ProductService {
 
     }
 
-    public void delete(Long id) {
-        this.productRepository.findById(id)
+    public void delete(String productAscii) {
+
+        this.productRepository.findById(productAscii)
                 .orElseThrow(() -> new ObjectNotFoundException("Product not found"));
 
-        this.productRepository.deleteById(id);
+        this.productRepository.deleteById(productAscii);
     }
 
 }

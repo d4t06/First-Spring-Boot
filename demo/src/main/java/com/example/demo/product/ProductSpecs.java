@@ -2,7 +2,11 @@ package com.example.demo.product;
 
 import java.util.List;
 import org.springframework.data.jpa.domain.Specification;
+
+import com.example.demo.default_storage.entity.DefaultStorage;
 import com.example.demo.product.entity.Product;
+
+import jakarta.persistence.criteria.Join;
 
 public class ProductSpecs {
 
@@ -29,7 +33,13 @@ public class ProductSpecs {
     }
 
     public static Specification<Product> betweenPrice(Integer fromPrice, Integer toPrice) {
-        return (root, query, criteriaBuilder) -> criteriaBuilder
-                .between(root.<Integer>get("price"), fromPrice, toPrice);
+        return (root, query, criteriaBuilder) -> {
+
+            Join<Product, DefaultStorage> defaultStorageJoin = root.join("defaultStorage");
+
+            return criteriaBuilder
+                    .between(defaultStorageJoin.<Integer>get("storage").get("defaultStorageCombine").get("combine").get("price"), fromPrice,
+                            toPrice);
+        };
     }
 }

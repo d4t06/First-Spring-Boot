@@ -1,6 +1,9 @@
 ### 
 GET http://localhost:8080/api/categories
 
+###
+GET http://localhost:8080/api/products/iphone
+
 ### 
 GET http://localhost:8080/api/products/search?q=iphone 
 
@@ -10,7 +13,7 @@ POST http://localhost:8080/api/products/search?page=0&size=2&sort=price,desc
 Content-Type: application/json
 
 {
-    "category_id": "3"
+    "category_id": "1"
 }
 
 

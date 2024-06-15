@@ -92,6 +92,7 @@ public class CategoryService {
                 .map(oldCategory -> {
                     oldCategory.setCategory_ascii(updateDto.category_ascii());
                     oldCategory.setCategory_name(updateDto.category_name());
+                    oldCategory.setAttribute_order(updateDto.attribute_order());
 
                     Category updatedCategory = this.categoryRepository.save(oldCategory);
                     return updatedCategory;
