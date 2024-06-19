@@ -19,9 +19,12 @@ import com.example.demo.description.ProductDescService;
 import com.example.demo.description.dto.ProductDescDto;
 import com.example.demo.product.converter.ProductDtoToProduct;
 import com.example.demo.product.converter.ProductToProductDto;
+import com.example.demo.product.converter.ProductToSearchProductDto;
 import com.example.demo.product.dto.ProductDTO;
 import com.example.demo.product.dto.ProductResponse;
+import com.example.demo.product.dto.SearchProductDto;
 import com.example.demo.product.entity.Product;
+import com.example.demo.system.MyResponse;
 import com.example.demo.system.exception.ObjectNotFoundException;
 
 @Service
@@ -33,6 +36,8 @@ public class ProductService {
 
     private final ProductToProductDto productToProductDto;
 
+    private final ProductToSearchProductDto productToSearchProductDto;
+
     private final ProductDescService productDescService;
 
     private final DefaultStorageRepository defaultStorageRepository;
@@ -41,6 +46,7 @@ public class ProductService {
             ProductToProductDto productToProductDto,
             ProductRepository productRepository,
             ProductDescService productDescService,
+            ProductToSearchProductDto productToSearchProductDto,
             DefaultStorageRepository defaultStorageRepository,
             ProductDtoToProduct productDtoToProduct) {
         this.productRepository = productRepository;
@@ -48,6 +54,7 @@ public class ProductService {
         this.productToProductDto = productToProductDto;
         this.productDescService = productDescService;
         this.defaultStorageRepository = defaultStorageRepository;
+        this.productToSearchProductDto = productToSearchProductDto;
     }
 
     public ProductResponse findAllByCriteria(
@@ -59,6 +66,10 @@ public class ProductService {
 
         if (StringUtils.hasLength(filter.category_id())) {
             spec = spec.and(ProductSpecs.hasCategoryID(filter.category_id()));
+        }
+
+        if (StringUtils.hasLength(filter.q())) {
+            spec = spec.and(ProductSpecs.containName(filter.q()));
         }
 
         if (filter.brand_id() != null) {
@@ -103,7 +114,7 @@ public class ProductService {
         res.setPage(pageable.getPageNumber());
         res.setSize(2);
         res.setCount(productPage.getTotalElements());
-
+        res.setQ(filter.q());
         res.setBrand_id(filter.brand_id());
         res.setCategory_id(filter.category_id());
         res.setIs_last(productPage.isLast());
@@ -119,22 +130,20 @@ public class ProductService {
         return res;
     }
 
-    public List<ProductDTO> search(String key) {
+    public MyResponse search(String key) {
 
         Specification<Product> spec = Specification.where(ProductSpecs.containName(key));
 
         List<Product> products = this.productRepository.findAll(spec);
-        List<ProductDTO> productDTOs = products.stream().map(p -> this.productToProductDto.convert(p)).toList();
+        List<SearchProductDto> dto = products.stream().map(p -> this.productToSearchProductDto.convert(p)).toList();
 
-        return productDTOs;
+        return new MyResponse(true, "search product successful", 200, dto);
+
     }
 
-    public Product findOne(String product_ascii) {
-        List<Product> products = this.productRepository.findByProductAscii(product_ascii);
-
-        if (products.size() != 1)
-            throw new ObjectNotFoundException("Product not found");
-        return products.get(0);
+    public Product findOne(Long product_id) {
+        return this.productRepository.findById(product_id).orElseThrow(
+                () -> new ObjectNotFoundException(""));
 
     }
 
@@ -144,23 +153,22 @@ public class ProductService {
         Product newProduct = this.productRepository.save(product);
 
         // add description
-        ProductDescDto descDto = new ProductDescDto(newProduct.getProductAscii(), newProduct.getProduct_name());
+        ProductDescDto descDto = new ProductDescDto(newProduct.getId(), newProduct.getProduct_name());
         this.productDescService.add(descDto);
 
         // add default storage
         DefaultStorage defaultStorage = new DefaultStorage();
-        defaultStorage.setProductAscii(newProduct.getProductAscii());
+        defaultStorage.setProductId(newProduct.getId());
         this.defaultStorageRepository.save(defaultStorage);
 
         return newProduct;
     }
 
-    public Product update(Long id, ProductDTO updateDto) {
-        return this.productRepository.findById(updateDto.product_ascii())
+    public Product update(Long productId, ProductDTO updateDto) {
+        return this.productRepository.findById(productId)
                 .map(oldProduct -> {
                     oldProduct.setBrandId(updateDto.brand_id());
                     oldProduct.setCategoryId(updateDto.category_id());
-                    oldProduct.setProductAscii(updateDto.product_ascii());
                     oldProduct.setProduct_name(updateDto.product_name());
                     oldProduct.setImage_url(updateDto.image_url());
 
@@ -171,12 +179,12 @@ public class ProductService {
 
     }
 
-    public void delete(String productAscii) {
+    public void delete(Long productId) {
 
-        this.productRepository.findById(productAscii)
+        this.productRepository.findById(productId)
                 .orElseThrow(() -> new ObjectNotFoundException("Product not found"));
 
-        this.productRepository.deleteById(productAscii);
+        this.productRepository.deleteById(productId);
     }
 
 }

@@ -16,7 +16,7 @@ public class CartItemDtoToCartItem implements Converter<CartItemDto, CartItem> {
         CartItem cartItem = new CartItem();
 
         cartItem.setUsername(source.username());
-        cartItem.setProduct_ascii(source.product_ascii());
+        cartItem.setProduct_id(source.product_id());
         cartItem.setColorId(source.color_id());
         cartItem.setStorageId(source.storage_id());
         cartItem.setAmount(source.amount());

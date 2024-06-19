@@ -15,7 +15,7 @@ public class CombineDtoToCombine implements Converter<CombineDto, Combine> {
 
         combine.setColor_id(source.color_id());
         combine.setStorage_id(source.storage_id());
-        combine.setProductAscii(source.product_ascii());
+        combine.setProductId(source.product_id());
         combine.setPrice(source.price());
         combine.setQuantity(source.quantity());
 

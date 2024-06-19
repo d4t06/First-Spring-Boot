@@ -19,7 +19,7 @@ import lombok.Data;
 @Data
 @Entity(name = "product_sliders")
 @Table(uniqueConstraints = {
-        @UniqueConstraint(name = "product_unique", columnNames = { "product_ascii", "color_id" })
+        @UniqueConstraint(name = "product_unique", columnNames = { "product_id", "color_id" })
 })
 public class ProductSlider {
     @Id
@@ -27,14 +27,14 @@ public class ProductSlider {
     private Long id;
 
     // @Column(nullable = false, unique = true)
-    // private String product_ascii;
+    // private Long product_id;
 
     // @OneToOne(fetch = FetchType.LAZY)
-    // @JoinColumn(name = "product_ascii", insertable = false, updatable = false)
+    // @JoinColumn(name = "product_id", insertable = false, updatable = false)
     // private Product product;
 
     //
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private Long color_id;
 
     @OneToOne(fetch = FetchType.LAZY)

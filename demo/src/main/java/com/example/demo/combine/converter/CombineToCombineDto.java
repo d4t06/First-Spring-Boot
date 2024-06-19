@@ -15,7 +15,7 @@ public class CombineToCombineDto implements Converter<Combine, CombineDto> {
                 source.getId(),
                 source.getColor_id(),
                 source.getStorage_id(),
-                source.getProductAscii(),
+                source.getProductId(),
                 source.getPrice(),
                 source.getQuantity());
         return combineDto;

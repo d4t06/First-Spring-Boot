@@ -15,7 +15,7 @@ public class ProductAttributeToProductAttributeDto implements Converter<ProductA
 
         ProductAttributeDto data = new ProductAttributeDto(
                 source.getId(),
-                source.getProduct_ascii(),
+                source.getProduct_id(),
                 source.getCategory_attribute_id(),
                 source.getValue());
 

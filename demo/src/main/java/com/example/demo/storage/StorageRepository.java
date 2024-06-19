@@ -8,5 +8,5 @@ import com.example.demo.storage.entity.Storage;
 
 public interface StorageRepository extends JpaRepository<Storage, Long> {
 
-    List<Storage> findByProductAscii(String productAscii);
+    List<Storage> findByProductId(Long productId);
 }

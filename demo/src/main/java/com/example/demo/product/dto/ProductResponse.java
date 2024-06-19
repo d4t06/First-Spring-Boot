@@ -16,4 +16,5 @@ public class ProductResponse {
       String type;
       List<String> price;
       Boolean is_last;
+      String q;
 }

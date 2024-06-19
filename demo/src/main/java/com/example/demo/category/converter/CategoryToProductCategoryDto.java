@@ -23,7 +23,7 @@ public class CategoryToProductCategoryDto implements Converter<Category, Product
 
         ProductCategoryDto categoryDto = new ProductCategoryDto(
                 source.getId(),
-                source.getCategory_ascii(),
+                source.getCategory_name_ascii(),
                 source.getCategory_name(),
                 source.getAttribute_order(),
                 source.getCategoryAttributes().isEmpty()

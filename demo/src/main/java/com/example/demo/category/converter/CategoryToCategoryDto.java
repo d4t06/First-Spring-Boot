@@ -60,7 +60,7 @@ public class CategoryToCategoryDto implements Converter<Category, CategoryDto> {
     public CategoryDto convert(Category source) {
         CategoryDto categoryDto = new CategoryDto(
             source.getId(),
-                source.getCategory_ascii(),
+                source.getCategory_name_ascii(),
                 source.getCategory_name(),
                 source.getAttribute_order(),
                 source.getIs_show(),

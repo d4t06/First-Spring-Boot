@@ -90,7 +90,7 @@ public class CategoryService {
     public Category update(Long id, CategoryDto updateDto) {
         return this.categoryRepository.findById(id)
                 .map(oldCategory -> {
-                    oldCategory.setCategory_ascii(updateDto.category_ascii());
+                    oldCategory.setCategory_name_ascii(updateDto.category_name_ascii());
                     oldCategory.setCategory_name(updateDto.category_name());
                     oldCategory.setAttribute_order(updateDto.attribute_order());
 

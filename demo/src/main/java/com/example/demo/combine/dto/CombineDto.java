@@ -9,7 +9,7 @@ public record CombineDto(
 
         @NotEmpty(message = "storage_ascii is required") Long storage_id,
 
-        @NotEmpty(message = "product_ascii is required") String product_ascii,
+        @NotEmpty(message = "product_ascii is required") Long product_id,
 
         @NotEmpty(message = "price is required") int price,
 

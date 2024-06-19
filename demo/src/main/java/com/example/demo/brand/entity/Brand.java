@@ -30,18 +30,14 @@ public class Brand {
    @Column(nullable = false)
    private String brand_name;
 
-   @Column(nullable = false)
-   private String brand_ascii;
+   @Column(nullable = false, unique = true)
+   private String brand_name_ascii;
 
    @Column(nullable = false)
    private Long category_id;
 
    @ManyToOne(fetch = FetchType.LAZY)
-   @JoinColumn(
-      name = "category_id",
-      insertable = false,  
-      updatable = false
-   )
+   @JoinColumn(name = "category_id", insertable = false, updatable = false)
    private Category category;
 
    @OneToMany(cascade = CascadeType.ALL, mappedBy = "brand")

@@ -86,9 +86,9 @@ public class ProductManageController {
     }
 
     // >>>>>>>>>>>>>>>
-    @PutMapping("/descriptions")
-    public MyResponse updateDescription(@RequestBody ProductDescDto body) {
-        return this.productDescService.update(body);
+    @PutMapping("/descriptions/{productId}")
+    public MyResponse updateDescription(@RequestBody ProductDescDto body, @PathVariable Long productId) {
+        return this.productDescService.update(productId, body);
     }
 
     // >>>>>>>>>>>>>>>

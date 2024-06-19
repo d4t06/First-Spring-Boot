@@ -24,7 +24,7 @@ import lombok.Data;
 @Data
 @Entity(name = "product_colors")
 @Table(uniqueConstraints = {
-        @UniqueConstraint(name = "product_unique", columnNames = { "product_ascii", "color_ascii" })
+        @UniqueConstraint(name = "product_unique", columnNames = { "product_id", "color_name_ascii" })
 })
 public class Color {
     @Id
@@ -32,10 +32,10 @@ public class Color {
     private Long id;
 
     @Column(nullable = false)
-    private String color_ascii;
+    private String color_name_ascii;
 
     @Column(nullable = false)
-    private String color;
+    private String color_name;
 
     //
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "color")
@@ -46,10 +46,10 @@ public class Color {
     private List<Combine> combines;
 
     //
-    @Column(nullable = false, name = "product_ascii")
-    private String productAscii;
+    @Column(nullable = false, name = "product_id")
+    private Long productId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "product_ascii", insertable = false, updatable = false)
+    @JoinColumn(name = "product_id", insertable = false, updatable = false)
     private Product product;
 }

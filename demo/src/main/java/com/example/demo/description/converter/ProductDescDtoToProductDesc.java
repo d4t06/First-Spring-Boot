@@ -13,7 +13,7 @@ public class ProductDescDtoToProductDesc implements Converter<ProductDescDto, Pr
     public ProductDesc convert(ProductDescDto source) {
         ProductDesc desc = new ProductDesc();
 
-        desc.setProductAscii(source.product_ascii());
+        desc.setProductId(source.product_id());
         desc.setContent(source.content());
 
         return desc;

@@ -14,8 +14,8 @@ public class CategoryAttToCategoryAttDto implements Converter<CategoryAttribute,
         CategoryAttributeDto data = new CategoryAttributeDto(
                 source.getId(),
                 source.getCategory_id(),
-                source.getAttribute(),
-                source.getAttribute_ascii());
+                source.getAttribute_name(),
+                source.getAttribute_name_ascii());
 
         return data;
     }

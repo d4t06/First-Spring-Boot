@@ -31,7 +31,6 @@ public class ProductToCartProductDto implements Converter<Product, CartProductDt
 
         CartProductDto dto = new CartProductDto(
                 source.getProduct_name(),
-                source.getProductAscii(),
                 source.getCategoryId(),
                 source.getBrandId(),
                 source.getImage_url(),

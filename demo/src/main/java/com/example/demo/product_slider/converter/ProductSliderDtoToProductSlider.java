@@ -13,7 +13,7 @@ public class ProductSliderDtoToProductSlider implements Converter<ProductSliderD
     public ProductSlider convert(ProductSliderDto source) {
         ProductSlider productSlider = new ProductSlider();
 
-        // productSlider.setProduct_ascii(source.product_ascii());
+        // productSlider.setProduct_id(source.product_id());
         productSlider.setSlider_id(source.slider_id());
         productSlider.setColor_id(source.color_id());
 

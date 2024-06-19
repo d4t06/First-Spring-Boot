@@ -64,7 +64,7 @@ public class ImageService {
 
       Image image = new Image();
 
-      image.setName(multipartFile.getOriginalFilename());
+      image.setImage_name(multipartFile.getOriginalFilename());
       image.setImage_url((String) result.get("url"));
       image.setPublicID((String) result.get("public_id"));
       image.setSize(Math.round(multipartFile.getSize() / 1024));

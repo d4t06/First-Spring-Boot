@@ -12,7 +12,7 @@ public class ProductDescToProductDescDto implements Converter<ProductDesc, Produ
 
     @Override
     public ProductDescDto convert(ProductDesc source) {
-        ProductDescDto detailDto = new ProductDescDto( source.getProductAscii(), source.getContent());
+        ProductDescDto detailDto = new ProductDescDto( source.getProductId(), source.getContent());
 
         return detailDto;
     }

@@ -21,13 +21,13 @@ import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
-import jakarta.persistence.Table;
-import jakarta.persistence.UniqueConstraint;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -36,22 +36,17 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(uniqueConstraints = {
-        @UniqueConstraint(name = "product_unique", columnNames = "product_ascii")
-})
-public class Product implements Serializable {
-    // @GeneratedValue(strategy = GenerationType.SEQUENCE, generator =
-    // "product_sequence")
-    // @SequenceGenerator(name = "product_sequence", sequenceName =
-    // "product_sequence", allocationSize = 100)
-    // private Long id;
 
+public class Product implements Serializable {
     @Id
-    @Column(nullable = false, name = "product_ascii")
-    private String productAscii;
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "product_sequence")
+    private Long id;
 
     @Column(nullable = false)
     private String product_name;
+
+    @Column(nullable = false, unique = true)
+    private String product_name_ascii;
 
     private String image_url;
     @Column(nullable = false)

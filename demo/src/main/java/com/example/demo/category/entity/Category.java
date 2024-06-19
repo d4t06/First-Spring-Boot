@@ -32,7 +32,7 @@ public class Category {
     private String category_name;
 
     @Column(nullable = false, unique = true)
-    private String category_ascii;
+    private String category_name_ascii;
 
     @Column(nullable = false)
     private String attribute_order;

@@ -15,11 +15,11 @@ import lombok.Data;
 @Entity(name = "default_product_storages")
 public class DefaultStorage {
     @Id
-    @Column(name = "product_ascii")
-    private String productAscii;
+    @Column(name = "product_id")
+    private Long productId;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "product_ascii", insertable = false, updatable = false)
+    @JoinColumn(name = "product_id", insertable = false, updatable = false)
     private Product product;
 
     @Column()

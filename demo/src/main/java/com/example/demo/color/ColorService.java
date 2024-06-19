@@ -59,7 +59,7 @@ public class ColorService {
 
         // create slider
         Slider slider = new Slider();
-        slider.setName("slider for " + colorDto.color_ascii());
+        slider.setName("slider for " + colorDto.color_name_ascii());
         Slider newSlider = this.sliderRepository.save(slider);
 
         // create product slider
@@ -72,7 +72,7 @@ public class ColorService {
         newProductSlider.setSlider(newSlider);
         newColor.setProductSlider(newProductSlider);
 
-        List<Storage> productStorages = this.storageRepository.findByProductAscii(colorDto.product_ascii());
+        List<Storage> productStorages = this.storageRepository.findByProductId(colorDto.product_id());
 
         ColorDto newColorDto = this.colorToColorDto.convert(newColor);
 
@@ -84,7 +84,7 @@ public class ColorService {
                 combine.setStorage_id(storage.getId());
                 combine.setPrice(0);
                 combine.setQuantity(0);
-                combine.setProductAscii(colorDto.product_ascii());
+                combine.setProductId(colorDto.product_id());
 
                 Combine newCombine = this.combineRepository.save(combine);
                 return this.combineToCombineDto.convert(newCombine);
@@ -104,8 +104,8 @@ public class ColorService {
 
     public void update(Long id, ColorDto colorDto) {
         this.colorRepository.findById(id).map(oldColor -> {
-            oldColor.setColor(colorDto.color());
-            oldColor.setColor_ascii(colorDto.color_ascii());
+            oldColor.setColor_name(colorDto.color_name());
+            oldColor.setColor_name_ascii(colorDto.color_name_ascii());
 
             Color newColor = this.colorRepository.save(oldColor);
 

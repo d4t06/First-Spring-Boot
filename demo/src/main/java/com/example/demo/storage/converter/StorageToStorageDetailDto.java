@@ -19,9 +19,9 @@ public class StorageToStorageDetailDto implements Converter<Storage, StorageDto>
     public StorageDto convert(Storage source) {
         StorageDto storageDto = new StorageDto(
                 source.getId(),
-                source.getStorage(),
-                source.getStorage_ascii(),
-                source.getProductAscii(),
+                source.getStorage_name(),
+                source.getStorage_name_ascii(),
+                source.getProductId(),
                 source.getDefaultStorageCombine() != null
                         ? this.defaultSCToDefaultSCDetailDto.convert(source.getDefaultStorageCombine())
                         : null);

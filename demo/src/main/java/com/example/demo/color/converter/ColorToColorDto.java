@@ -20,9 +20,9 @@ public class ColorToColorDto implements Converter<Color, ColorDto> {
 
         ColorDto colorDto = new ColorDto(
                 source.getId(),
-                source.getColor(),
-                source.getColor_ascii(),
-                source.getProductAscii(),
+                source.getColor_name(),
+                source.getColor_name_ascii(),
+                source.getProductId(),
                 this.productToProductSliderDto.convert(source.getProductSlider()));
 
         return colorDto;

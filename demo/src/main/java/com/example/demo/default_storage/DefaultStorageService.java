@@ -23,7 +23,7 @@ public class DefaultStorageService {
     }
 
     public MyResponse update(DefaultStorageDto dto) {
-        this.defaultStorageRepository.findById(dto.product_ascii()).map(old -> {
+        this.defaultStorageRepository.findById(dto.product_id()).map(old -> {
             old.setStorage_id(dto.storage_id());
 
             return this.defaultStorageRepository.save(old);

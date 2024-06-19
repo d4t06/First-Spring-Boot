@@ -24,7 +24,7 @@ public class ProductSpecs {
 
     public static Specification<Product> containName(String name) {
         return (root, query, criteriaBuilder) -> criteriaBuilder
-                .like(criteriaBuilder.lower(root.get("product_name")), "%" + name.toLowerCase() + "%");
+                .like(criteriaBuilder.lower(root.get("product_name_ascii")), "%" + name.toLowerCase() + "%");
     }
 
     public static Specification<Product> hasBrandIDs(List<String> brandIDs) {

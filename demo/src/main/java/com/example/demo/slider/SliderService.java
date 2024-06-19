@@ -3,7 +3,6 @@ package com.example.demo.slider;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
-
 import com.example.demo.image.ImageRepository;
 import com.example.demo.image.entity.Image;
 import com.example.demo.slider.converter.SliderDtoToSlider;
@@ -66,6 +65,19 @@ public class SliderService {
       return sliderImages;
    }
 
+   public void updateSliderImage(SliderImageDto dto, Long id) {
+
+      this.sliderImageRepository.findById(id)
+            .map(old -> {
+               old.setImage_id(dto.image_id());
+               old.setLink_to(dto.link_to());
+
+               return this.sliderImageRepository.save(old);
+            })
+            .orElseThrow(() -> new ObjectNotFoundException("slider image not found"));
+
+   }
+
    public void deleteSliderImage(Long id) {
       this.sliderImageRepository.findById(id)
             .orElseThrow(() -> new ObjectNotFoundException("slider image not found"));
@@ -73,9 +85,4 @@ public class SliderService {
       this.sliderImageRepository.deleteById(id);
    }
 
-   // public void deleteSliderImages(List<Long> ids) {
-   // for (Long id : ids) {
-   // this.deleteSliderImage(id);
-   // }
-   // }
 }

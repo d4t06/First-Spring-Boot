@@ -31,8 +31,8 @@ public class ProductDescService {
         return this.productDescToProductDescDto.convert(newDesc);
     }
 
-    public MyResponse update(ProductDescDto detailDto) {
-        this.productDescRepository.findById(detailDto.product_ascii()).map(oldDetail -> {
+    public MyResponse update(Long product_id, ProductDescDto detailDto) {
+        this.productDescRepository.findById(product_id).map(oldDetail -> {
             oldDetail.setContent(detailDto.content());
             ProductDesc desc = this.productDescRepository.save(oldDetail);
 

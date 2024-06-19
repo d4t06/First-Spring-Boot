@@ -24,7 +24,7 @@ import lombok.Data;
 @Data
 @Entity
 @Table(uniqueConstraints = {
-        @UniqueConstraint(name = "product_unique", columnNames = { "product_ascii", "storage_ascii" })
+        @UniqueConstraint(name = "product_unique", columnNames = { "product_id", "storage_name_ascii" })
 })
 public class Storage {
 
@@ -33,21 +33,21 @@ public class Storage {
     private Long id;
 
     @Column(nullable = false)
-    private String storage_ascii;
+    private String storage_name_ascii;
 
     @Column(nullable = false)
-    private String storage;
+    private String storage_name;
 
     //
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "storage")
     private List<Combine> combines;
 
     //
-    @Column(nullable = false, name = "product_ascii")
-    private String productAscii;
+    @Column(nullable = false, name = "product_id")
+    private Long productId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "product_ascii", insertable = false, updatable = false)
+    @JoinColumn(name = "product_id", insertable = false, updatable = false)
     private Product product;
 
     //

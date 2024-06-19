@@ -39,8 +39,7 @@ public class CategoryAttributeService {
 
         CategoryAttribute updated = this.categoryAttributerRepository.findById(id)
                 .map(oldCategoryAtt -> {
-                    oldCategoryAtt.setAttribute(categoryAttributeDto.attribute());
-                    oldCategoryAtt.setAttribute_ascii(categoryAttributeDto.attribute_ascii());
+                    oldCategoryAtt.setAttribute_name(categoryAttributeDto.attribute_name());
                     oldCategoryAtt.setCategory_id(categoryAttributeDto.category_id());
 
                     CategoryAttribute updatedCategoryAttribute = this.categoryAttributerRepository.save(oldCategoryAtt);

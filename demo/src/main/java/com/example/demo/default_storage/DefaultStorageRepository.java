@@ -6,6 +6,6 @@ import org.springframework.stereotype.Repository;
 import com.example.demo.default_storage.entity.DefaultStorage;
 
 @Repository
-public interface DefaultStorageRepository extends JpaRepository<DefaultStorage, String> {
+public interface DefaultStorageRepository extends JpaRepository<DefaultStorage, Long> {
 
 }

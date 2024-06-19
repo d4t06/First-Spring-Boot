@@ -13,9 +13,9 @@ public class StorageDtoToStorage implements Converter<StorageDto, Storage>{
     public Storage convert(StorageDto source) {
         Storage storage = new Storage();
         
-        storage.setStorage(source.storage());
-        storage.setStorage_ascii(source.storage_ascii());
-        storage.setProductAscii(source.product_ascii());
+        storage.setStorage_name(source.storage_name());
+        storage.setStorage_name_ascii(source.storage_name_ascii());
+        storage.setProductId(source.product_id());
 
         return storage;
     }

@@ -14,7 +14,7 @@ public class ProductAttributeDtoToProductAttribute implements Converter<ProductA
         ProductAttribute data = new ProductAttribute();
 
         data.setCategory_attribute_id(source.category_attribute_id());
-        data.setProduct_ascii(source.product_ascii());
+        data.setProduct_id(source.product_id());
         data.setValue(source.value());
 
         return data;

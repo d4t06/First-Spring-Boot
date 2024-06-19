@@ -48,13 +48,13 @@ public class ProductToProductDetailDto implements Converter<Product, ProductDeta
         @Override
         public ProductDetailDto convert(Product source) {
                 ProductDetailDto productDetailDto = new ProductDetailDto(
+                                source.getId(),
                                 source.getProduct_name(),
-                                source.getProductAscii(),
+                                source.getProduct_name_ascii(),
                                 source.getCategoryId(),
                                 this.categoryToProductCategoryDto.convert(source.getCategory()),
                                 source.getBrandId(),
                                 source.getImage_url(),
-                                0,
                                 source.getStorages().isEmpty()
                                                 ? new ArrayList<>()
                                                 : source.getStorages().stream().map(

@@ -15,9 +15,9 @@ public class ColorDtoToColor implements Converter<ColorDto,Color> {
     public Color convert(ColorDto source) {
         Color color = new Color();
 
-        color.setColor(source.color());
-        color.setColor_ascii(source.color_ascii());
-        color.setProductAscii(source.product_ascii());
+        color.setColor_name(source.color_name());
+        color.setColor_name_ascii(source.color_name_ascii());
+        color.setProductId(source.product_id());
         
         return color;
     }

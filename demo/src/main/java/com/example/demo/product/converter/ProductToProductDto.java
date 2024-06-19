@@ -26,8 +26,9 @@ public class ProductToProductDto implements Converter<Product, ProductDTO> {
     @Override
     public ProductDTO convert(Product source) {
         ProductDTO productDto = new ProductDTO(
+                source.getId(),
                 source.getProduct_name(),
-                source.getProductAscii(),
+                source.getProduct_name_ascii(),
                 source.getCategoryId(),
                 source.getBrandId(),
                 source.getImage_url(),

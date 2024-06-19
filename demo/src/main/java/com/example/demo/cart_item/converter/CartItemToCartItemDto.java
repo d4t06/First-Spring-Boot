@@ -24,7 +24,7 @@ public class CartItemToCartItemDto implements Converter<CartItem, CartItemDto> {
                 source.getColorId(),
                 source.getStorageId(),
                 source.getAmount(),
-                source.getProduct_ascii(),
+                source.getProduct_id(),
                 this.productToCartProductDto.convert(source.getProduct()));
 
         return dto;

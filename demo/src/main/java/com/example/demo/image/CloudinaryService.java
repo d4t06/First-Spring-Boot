@@ -20,9 +20,9 @@ public class CloudinaryService {
    // Dotenv dotenv = Dotenv.configure().filename(".env.local").load();
 
    Map<?, ?> params = ObjectUtils.asMap(
-      "cloud_name", "dalg3ayqh",
-      "api_key", "416638315783794",
-      "api_secret", "rPRSYlwMg4zMLD9QbCyd2gu2HCk");
+      "cloud_name", "",
+      "api_key", "",
+      "api_secret", "");
 
    Map<?, ?> uploadParams = ObjectUtils.asMap(
          "folder", "spring-boot",

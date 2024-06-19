@@ -63,7 +63,7 @@ public class StorageService {
         StorageDto newStorageDto = this.storageToStorageDto.convert(newStorage);
 
         // find all colors of product and create combine
-        List<Color> productColors = this.colorRepository.findByProductAscii(storageDto.product_ascii());
+        List<Color> productColors = this.colorRepository.findByProductId(storageDto.product_id());
         if (!productColors.isEmpty()) {
             List<CombineDto> newCombinesDto = productColors.stream().map(color -> {
                 Combine combine = new Combine();
@@ -72,7 +72,7 @@ public class StorageService {
                 combine.setStorage_id(newStorage.getId());
                 combine.setPrice(0);
                 combine.setQuantity(0);
-                combine.setProductAscii(storageDto.product_ascii());
+                combine.setProductId(storageDto.product_id());
 
                 Combine newCombine = this.combineRepository.save(combine);
                 return this.combineToCombineDto.convert(newCombine);
@@ -92,8 +92,8 @@ public class StorageService {
     public void update(Long id, StorageDto storageDto) {
         this.storageRepository.findById(id).map(oldStorage -> {
 
-            oldStorage.setStorage(storageDto.storage());
-            oldStorage.setStorage_ascii(storageDto.storage_ascii());
+            oldStorage.setStorage_name(storageDto.storage_name());
+            oldStorage.setStorage_name_ascii(storageDto.storage_name_ascii());
 
             Storage newStorage = this.storageRepository.save(oldStorage);
 

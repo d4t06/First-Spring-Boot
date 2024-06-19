@@ -20,7 +20,7 @@ import lombok.Data;
 @Data
 @Entity(name = "product_combines")
 @Table(uniqueConstraints = {
-        @UniqueConstraint(name = "product_unique", columnNames = { "product_ascii", "storage_ascii", "color_ascii" })
+        @UniqueConstraint(name = "product_unique", columnNames = { "product_id", "storage_id", "color_id" })
 })
 public class Combine {
     @Id
@@ -50,10 +50,10 @@ public class Combine {
     private Color color;
 
     //
-    @Column(nullable = false, name = "product_ascii")
-    private String productAscii;
+    @Column(nullable = false, name = "product_id")
+    private Long productId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "product_ascii", insertable = false, updatable = false)
+    @JoinColumn(name = "product_id", insertable = false, updatable = false)
     private Product product;
 }

@@ -19,7 +19,7 @@ import lombok.Data;
 @Data
 @Entity(name = "product_attributes")
 @Table(uniqueConstraints = {
-        @UniqueConstraint(name = "product_unique", columnNames = { "product_ascii", "category_attribute_id" })
+        @UniqueConstraint(name = "product_unique", columnNames = { "product_id", "category_attribute_id" })
 })
 public class ProductAttribute {
     @Id
@@ -35,9 +35,9 @@ public class ProductAttribute {
 
     //
     @Column(nullable = false)
-    private String product_ascii;
+    private Long product_id;
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "product_ascii", insertable = false, updatable = false)
+    @JoinColumn(name = "product_id", insertable = false, updatable = false)
     private Product product;
 
     @Column(nullable = false)

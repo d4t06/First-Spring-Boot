@@ -13,7 +13,7 @@ public class ImageToImageDto implements Converter<Image, ImageDto> {
    @Override
    @Nullable
    public ImageDto convert(Image source) {
-      ImageDto imageDto = new ImageDto(source.getId(), source.getImage_url(), source.getName(),
+      ImageDto imageDto = new ImageDto(source.getId(), source.getImage_url(), source.getImage_name(),
             source.getPublicID(), source.getSize());
       return imageDto;
    }

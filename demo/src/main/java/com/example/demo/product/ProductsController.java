@@ -1,7 +1,5 @@
 package com.example.demo.product;
 
-import java.util.List;
-
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -44,14 +42,12 @@ public class ProductsController {
 
     @GetMapping("/search")
     public MyResponse getMethodName(@RequestParam(name = "q", required = true) String q) {
-        List<ProductDTO> productDTOs = this.productService.search(q);
-
-        return new MyResponse(true, "search product successful", 200, productDTOs);
+        return this.productService.search(q);
     }
 
-    @GetMapping("/{product_ascii}")
-    public MyResponse findOne(@PathVariable String product_ascii) {
-        Product product = this.productService.findOne(product_ascii);
+    @GetMapping("/{productId}")
+    public MyResponse findOne(@PathVariable Long productId) {
+        Product product = this.productService.findOne(productId);
         ProductDetailDto productDetailDto = this.productToProductDetailDto.convert(product);
 
         return new MyResponse(true, "Get one product successful", 200, productDetailDto);
@@ -65,23 +61,23 @@ public class ProductsController {
         return new MyResponse(true, "Add product successful", HttpStatus.OK.value(), product);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/{productId}")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public MyResponse update(
-            @PathVariable Long id,
+            @PathVariable Long productId,
             @RequestBody ProductDTO updateDto) {
 
-        this.productService.update(id, updateDto);
+        this.productService.update(productId, updateDto);
 
         return new MyResponse(true, "Update product successful", 200);
     }
 
-    @DeleteMapping("/{productAscii}")
+    @DeleteMapping("/{productId}")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public MyResponse delete(
-            @PathVariable String productAscii) {
+            @PathVariable Long productId) {
 
-        this.productService.delete(productAscii);
+        this.productService.delete(productId);
         return new MyResponse(true, "Delete product successful", 200);
 
     }

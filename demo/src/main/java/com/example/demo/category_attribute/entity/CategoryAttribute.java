@@ -21,10 +21,10 @@ public class CategoryAttribute {
     private Long id;
 
     @Column(nullable = false)
-    private String attribute;
+    private String attribute_name;
 
-    @Column(nullable = false)
-    private String attribute_ascii;
+    @Column(nullable = false, unique = true)
+    private String attribute_name_ascii;
 
     //
     @Column(nullable = false)

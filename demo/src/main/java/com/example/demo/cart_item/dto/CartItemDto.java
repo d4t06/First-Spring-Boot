@@ -8,7 +8,7 @@ public record CartItemDto(Long id,
         @NotNull(message = "color_id is required") Long color_id,
         @NotNull(message = "storage_id is required") Long storage_id,
         @NotNull(message = "amount is required") int amount,
-        @NotEmpty(message = "product_ascii is required") String product_ascii,
+        @NotNull(message = "product_id is required") Long product_id,
 
         CartProductDto product) {
 

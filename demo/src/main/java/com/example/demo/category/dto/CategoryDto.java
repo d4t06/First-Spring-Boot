@@ -11,7 +11,7 @@ import lombok.NonNull;
 public record CategoryDto(
                 Long id,
 
-                @NonNull String category_ascii,
+                @NonNull String category_name_ascii,
 
                 @NonNull String category_name,
 

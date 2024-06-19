@@ -15,8 +15,8 @@ public class CategoryAttDToCategoryAtt implements Converter<CategoryAttributeDto
         CategoryAttribute data = new CategoryAttribute();
 
         data.setCategory_id(source.category_id());
-        data.setAttribute(source.attribute());
-        data.setAttribute_ascii(source.attribute_ascii());
+        data.setAttribute_name(source.attribute_name());
+        data.setAttribute_name_ascii(source.attribute_name_ascii());
 
         return data;
     }
