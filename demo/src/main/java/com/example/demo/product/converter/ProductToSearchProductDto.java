@@ -10,24 +10,24 @@ import com.example.demo.product.entity.Product;
 @Component
 public class ProductToSearchProductDto implements Converter<Product, SearchProductDto> {
 
-    private final DStorageToDStorageDetailDto dStorageDetailDto;
+   private final DStorageToDStorageDetailDto dStorageDetailDto;
 
-    public ProductToSearchProductDto(
-            DStorageToDStorageDetailDto dStorageDetailDto) {
-        this.dStorageDetailDto = dStorageDetailDto;
-    }
+   public ProductToSearchProductDto(
+         DStorageToDStorageDetailDto dStorageDetailDto) {
+      this.dStorageDetailDto = dStorageDetailDto;
+   }
 
-    @Override
-    public SearchProductDto convert(Product source) {
-        SearchProductDto dto = new SearchProductDto(
-                source.getId(),
-                source.getProduct_name(),
-                source.getProduct_name_ascii(),
-                source.getImage_url(),
-                source.getInstallment(),
-                this.dStorageDetailDto.convert(source.getDefaultStorage()));
+   @Override
+   public SearchProductDto convert(Product source) {
+      SearchProductDto dto = new SearchProductDto(
+            source.getId(),
+            source.getProduct_name(),
+            source.getProduct_name_ascii(),
+            source.getImage_url(),
+            source.getInstallment() == null ? false : true,
+            this.dStorageDetailDto.convert(source.getDefaultStorage()));
 
-        return dto;
-    }
+      return dto;
+   }
 
 }

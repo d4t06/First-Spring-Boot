@@ -7,4 +7,5 @@ import com.example.demo.product.entity.Product;
 
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Long>, JpaSpecificationExecutor<Product> {
+
 }

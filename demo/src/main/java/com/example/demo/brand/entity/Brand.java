@@ -13,6 +13,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -22,6 +24,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 
+@Table(uniqueConstraints = {
+      @UniqueConstraint(name = "brand_unique", columnNames = { "category_id", "brand_name_ascii" })
+})
 public class Brand {
    @Id
    @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,7 +35,7 @@ public class Brand {
    @Column(nullable = false)
    private String brand_name;
 
-   @Column(nullable = false, unique = true)
+   @Column(nullable = false)
    private String brand_name_ascii;
 
    @Column(nullable = false)

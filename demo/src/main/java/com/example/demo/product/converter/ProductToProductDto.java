@@ -32,12 +32,14 @@ public class ProductToProductDto implements Converter<Product, ProductDTO> {
                 source.getCategoryId(),
                 source.getBrandId(),
                 source.getImage_url(),
-                source.getInstallment(),
+                source.getInstallment() == null ? false : false,
                 source.getStorages().isEmpty()
                         ? new ArrayList<>()
                         : source.getStorages().stream().map(
                                 storage -> this.storageToStorageDetailDto.convert(storage)).toList(),
-                this.defaultStorageToDefaultStorageDto.convert(source.getDefaultStorage()));
+               source.getDefaultStorage() == null 
+                  ? null 
+                  : this.defaultStorageToDefaultStorageDto.convert(source.getDefaultStorage()));
 
         return productDto;
     }

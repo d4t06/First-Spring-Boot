@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -68,6 +69,19 @@ public class ImageService {
       image.setImage_url((String) result.get("url"));
       image.setPublicID((String) result.get("public_id"));
       image.setSize(Math.round(multipartFile.getSize() / 1024));
+
+      return this.imageRepository.save(image);
+   }
+
+   public Image saveFromUrl(String url) throws IOException {
+      Map<?, ?> result = this.cloudinaryService.upload(url);
+
+      Image image = new Image();
+
+      image.setImage_name(UUID.randomUUID().toString());
+      image.setImage_url((String) result.get("url"));
+      image.setPublicID((String) result.get("public_id"));
+      image.setSize(Math.round(result.size() / 1024));
 
       return this.imageRepository.save(image);
    }

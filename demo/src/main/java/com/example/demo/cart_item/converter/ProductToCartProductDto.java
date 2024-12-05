@@ -34,7 +34,7 @@ public class ProductToCartProductDto implements Converter<Product, CartProductDt
                 source.getCategoryId(),
                 source.getBrandId(),
                 source.getImage_url(),
-                source.getInstallment(),
+                source.getInstallment() == null ? false : true,
                 source.getStorages().isEmpty()
                         ? new ArrayList<>()
                         : source.getStorages().stream().map(
