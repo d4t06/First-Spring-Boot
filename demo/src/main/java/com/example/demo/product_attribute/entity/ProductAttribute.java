@@ -40,6 +40,6 @@ public class ProductAttribute {
     @JoinColumn(name = "product_id", insertable = false, updatable = false)
     private Product product;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition="TEXT")
     private String value;
 }

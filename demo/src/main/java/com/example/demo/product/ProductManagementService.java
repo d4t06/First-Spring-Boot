@@ -3,9 +3,8 @@ package com.example.demo.product;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
-
 import com.example.demo.color.ColorRepository;
 import com.example.demo.color.entity.Color;
 import com.example.demo.combine.CombineRepository;
@@ -16,7 +15,9 @@ import com.example.demo.description.ProductDescRepository;
 import com.example.demo.description.entity.ProductDesc;
 import com.example.demo.image.ImageService;
 import com.example.demo.image.entity.Image;
+import com.example.demo.product.converter.ProductToSearchProductDtoLess;
 import com.example.demo.product.dto.JsonProductDto;
+import com.example.demo.product.dto.SearchProductDto;
 import com.example.demo.product.entity.Product;
 import com.example.demo.product_attribute.ProductAttributeRepository;
 import com.example.demo.product_attribute.entity.ProductAttribute;
@@ -31,9 +32,10 @@ import com.example.demo.storage.StorageRepository;
 import com.example.demo.storage.entity.DefaultStorageCombine;
 import com.example.demo.storage.entity.Storage;
 import com.example.demo.system.ConvertEng;
+import com.example.demo.system.MyResponse;
 
 @Service
-public class ImportProductService {
+public class ProductManagementService {
 
    Date start = new Date();
 
@@ -59,7 +61,9 @@ public class ImportProductService {
 
    private final ProductDescRepository productDescRepository;
 
-   public ImportProductService(ProductRepository productRepository,
+   private final ProductToSearchProductDtoLess productToSearchProductDtoLess;
+
+   public ProductManagementService(ProductRepository productRepository,
          ColorRepository colorRepository,
          StorageRepository storageRepository,
          CombineRepository combineRepository,
@@ -69,6 +73,7 @@ public class ImportProductService {
          DefaultStorageRepository defaultStorageRepository,
          DefaultStorageCombineRepository defaultStorageCombineRepository,
          ProductDescRepository productDescRepository,
+         ProductToSearchProductDtoLess productToSearchProductDtoLess,
          ProductAttributeRepository productAttributeRepository) {
       this.productRepository = productRepository;
       this.colorRepository = colorRepository;
@@ -81,6 +86,7 @@ public class ImportProductService {
       this.defaultStorageRepository = defaultStorageRepository;
       this.defaultStorageCombineRepository = defaultStorageCombineRepository;
       this.productDescRepository = productDescRepository;
+      this.productToSearchProductDtoLess = productToSearchProductDtoLess;
    }
 
    public Product jsonImport(JsonProductDto json) throws Error {
@@ -92,6 +98,12 @@ public class ImportProductService {
          ConvertEng convertEng = new ConvertEng();
 
          Product productData = new Product();
+
+         Specification<Product> spec = Specification.where(ProductSpecs.hasName(convertEng.convert(json.name())));
+         List<Product> founded = this.productRepository.findAll(spec);
+
+         if (!founded.isEmpty())
+            return null;
 
          productData.setBrandId(json.brand_id());
          productData.setCategoryId(json.category_id());
@@ -240,6 +252,17 @@ public class ImportProductService {
          throw new Error(e.getMessage());
 
       }
+
+   }
+
+   public MyResponse searchLess(String key) {
+
+      Specification<Product> spec = Specification.where(ProductSpecs.containName(key));
+
+      List<Product> products = this.productRepository.findAll(spec);
+      List<SearchProductDto> dto = products.stream().map(p -> this.productToSearchProductDtoLess.convert(p)).toList();
+
+      return new MyResponse(true, "search product successful", 200, dto);
 
    }
 

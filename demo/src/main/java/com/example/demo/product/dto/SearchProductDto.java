@@ -13,6 +13,10 @@ public record SearchProductDto(
 
         boolean installment,
 
+        Long category_id,
+
+        Long brand_id,
+
         DefaultStorageDto default_storage
 
 ) {

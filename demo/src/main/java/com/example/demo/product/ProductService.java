@@ -8,25 +8,20 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.domain.Sort.Order;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import com.example.demo.color.entity.Color;
 import com.example.demo.default_storage.DefaultStorageRepository;
 import com.example.demo.default_storage.entity.DefaultStorage;
 import com.example.demo.description.ProductDescService;
 import com.example.demo.description.dto.ProductDescDto;
 import com.example.demo.product.converter.ProductDtoToProduct;
-import com.example.demo.product.converter.ProductToProductDto;
 import com.example.demo.product.converter.ProductToSearchProductDto;
-import com.example.demo.product.dto.JsonProductDto;
+import com.example.demo.product.converter.ProductToSearchProductDtoLess;
 import com.example.demo.product.dto.ProductDTO;
-import com.example.demo.product.dto.ProductResponse;
 import com.example.demo.product.dto.SearchProductDto;
 import com.example.demo.product.entity.Product;
-import com.example.demo.system.ConvertEng;
 import com.example.demo.system.MyResponse;
 import com.example.demo.system.exception.ObjectNotFoundException;
 
@@ -37,8 +32,6 @@ public class ProductService {
 
    private final ProductDtoToProduct productDtoToProduct;
 
-   private final ProductToProductDto productToProductDto;
-
    private final ProductToSearchProductDto productToSearchProductDto;
 
    private final ProductDescService productDescService;
@@ -46,33 +39,27 @@ public class ProductService {
    private final DefaultStorageRepository defaultStorageRepository;
 
    public ProductService(
-         ProductToProductDto productToProductDto,
          ProductRepository productRepository,
          ProductDescService productDescService,
          ProductToSearchProductDto productToSearchProductDto,
          DefaultStorageRepository defaultStorageRepository,
+         ProductToSearchProductDtoLess productToSearchProductDtoLess,
          ProductDtoToProduct productDtoToProduct) {
       this.productRepository = productRepository;
       this.productDtoToProduct = productDtoToProduct;
-      this.productToProductDto = productToProductDto;
       this.productDescService = productDescService;
       this.defaultStorageRepository = defaultStorageRepository;
       this.productToSearchProductDto = productToSearchProductDto;
    }
 
-   public ProductResponse findAllByCriteria(
+   public Page<Product> findAllByCriteria(
          Pageable pageable,
          ProductFilter filter) {
 
       Specification<Product> spec = Specification.where(null);
-      ProductResponse res = new ProductResponse();
 
       if (StringUtils.hasLength(filter.category_id())) {
          spec = spec.and(ProductSpecs.hasCategoryID(filter.category_id()));
-      }
-
-      if (StringUtils.hasLength(filter.q())) {
-         spec = spec.and(ProductSpecs.containName(filter.q()));
       }
 
       if (filter.brand_id() != null) {
@@ -84,53 +71,21 @@ public class ProductService {
                Integer.parseInt(filter.price().get(1)) * (int) Math.pow(10, 6)));
       }
 
-      // Sort sort = pageable.getSort();
-
-      // Sort sort = Sort.by(pageable.getSort().get()
-      // .map(order -> order.getProperty().equals("price"))
-      // ? Sort.Order
-      // .by("defaultStorage.storage.defaultStorageCombine.combine.price",
-      // order.get())
-      // .with(order.getDirection())
-      // : order)
-      // .collect(Collectors.toList());
-
-      Sort sort = Sort.by(
+      Sort sort = pageable.getSort().isSorted() ? Sort.by(
             pageable.getSort().get()
-                  .map(order -> order.getProperty().equals("price") ? Sort.Order
-                        .by("defaultStorage.storage.defaultStorageCombine.combine.price")
-                        .with(order.getDirection()) : order)
-                  .collect(Collectors.toList()));
+                  .map(order -> order.getProperty().equals("price")
+                        ? Sort.Order
+                              .by("defaultStorage.storage.defaultStorageCombine.combine.price")
+                              .with(order.getDirection())
+                        : order)
+                  .collect(Collectors.toList()))
+            : Sort.by(Sort.Direction.DESC, "id");
 
       Page<Product> productPage = this.productRepository.findAll(spec, PageRequest.of(
             pageable.getPageNumber(), pageable.getPageSize(), sort));
 
-      List<Product> products = productPage.getContent();
+      return productPage;
 
-      List<ProductDTO> productsDTO = new ArrayList<>();
-      for (Product product : products) {
-         ProductDTO productDTO = this.productToProductDto.convert(product);
-         productsDTO.add(productDTO);
-      }
-
-      res.setProducts(productsDTO);
-      res.setPage(pageable.getPageNumber());
-      res.setSize(2);
-      res.setCount(productPage.getTotalElements());
-      res.setQ(filter.q());
-      res.setBrand_id(filter.brand_id());
-      res.setCategory_id(filter.category_id());
-      res.setIs_last(productPage.isLast());
-      res.setPrice(filter.price());
-
-      if (pageable.getSort().isSorted()) {
-         Order order = pageable.getSort().toList().get(0);
-
-         res.setColumn(order.getProperty());
-         res.setType(order.getDirection().name());
-      }
-
-      return res;
    }
 
    public MyResponse search(String key) {

@@ -26,14 +26,14 @@ public class InitService {
 
         User user = this.userService.findOne(userDto.username());
         if (user != null)
-            return new MyResponse(false, "Username has taken", HttpStatus.CONFLICT.value());
+            return new MyResponse(false, "Forbidden", HttpStatus.FORBIDDEN.value());
 
         User adminUser = this.userService.init(userDto);
         CategoryDto home = new CategoryDto(null, "home", "home", "", 0, null, null, null, null);
 
         this.categoryService.create(home);
 
-        return new MyResponse(true, "Init successfull", 200, adminUser);
+        return new MyResponse(true, "Ok", 200, adminUser);
     }
 
 }

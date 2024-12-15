@@ -9,6 +9,7 @@ import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -38,7 +39,12 @@ public class ImageService {
 
    public ImageResponse findAll(int page) {
       Pageable pageable = PageRequest.of(page, 12);
-      Page<Image> imagePage = this.imageRepository.findAll(pageable);
+
+      Sort sort = Sort.by(Sort.Direction.DESC, "id");
+
+      Page<Image> imagePage = this.imageRepository
+            .findAll(PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(),
+                  sort));
 
       List<Image> images = imagePage.getContent();
 

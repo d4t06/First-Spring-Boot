@@ -7,9 +7,10 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import com.example.demo.category.converter.CategoryToCategoryDto;
+import com.example.demo.category.converter.CategoryToCategoryDtoLess;
 import com.example.demo.category.dto.CategoryDto;
+import com.example.demo.category.dto.CategoryDtoLess;
 import com.example.demo.category.dto.JsonCategoryDto;
-// import com.example.demo.category.dto.CategorySliderDto;
 import com.example.demo.category.entity.Category;
 import com.example.demo.category_attribute.CategoryAttributeService;
 import com.example.demo.category_attribute.dto.CategoryAttributeDto;
@@ -22,14 +23,17 @@ public class CategoryController {
    private final CategoryService categoryService;
    private final CategoryToCategoryDto categoryToCategoryDto;
    private final CategoryAttributeService categoryAttributeService;
+   private final CategoryToCategoryDtoLess categoryToCategoryDtoLess;
 
    public CategoryController(
          CategoryService categoryService,
          CategoryAttributeService categoryAttributeService,
+         CategoryToCategoryDtoLess categoryToCategoryDtoLess,
          CategoryToCategoryDto categoryToCategoryDto) {
 
       this.categoryService = categoryService;
       this.categoryToCategoryDto = categoryToCategoryDto;
+      this.categoryToCategoryDtoLess = categoryToCategoryDtoLess;
       this.categoryAttributeService = categoryAttributeService;
    }
 
@@ -43,6 +47,20 @@ public class CategoryController {
          categoryDtos.add(categoryDto);
       }
       return new MyResponse(true, "Get all category successful", 200, categoryDtos);
+   }
+
+   @GetMapping("less")
+   public MyResponse findAllLess() {
+      List<Category> categories = this.categoryService.findAll();
+      List<CategoryDtoLess> data = new ArrayList<CategoryDtoLess>();
+
+      for (Category cat : categories) {
+         if (cat.getIs_show() != 0) {
+            data.add(this.categoryToCategoryDtoLess.convert(cat));
+         }
+      }
+
+      return new MyResponse(true, "Get all category successful", 200, data);
    }
 
    @GetMapping("/{id}")
@@ -60,15 +78,6 @@ public class CategoryController {
 
       return new MyResponse(true, "Add successful", 200, categoryDto);
    }
-
-   // @PostMapping("/sliders")
-   // @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-   // public MyResponse createCategorySlider(@RequestBody CategorySliderDto
-   // categorySliderDto) {
-   // this.categoryService.createCategorySlider(categorySliderDto);
-
-   // return new MyResponse(true, "Add category slider successful", 200);
-   // }
 
    @PutMapping("/{id}")
    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
@@ -110,11 +119,17 @@ public class CategoryController {
    }
 
    @PostMapping("/json-import")
-   // @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+   @PreAuthorize("hasAuthority('ROLE_ADMIN')")
    public MyResponse json(@RequestBody List<JsonCategoryDto> dto) {
       List<Category> categories = this.categoryService.jsonImport(dto);
-      List<CategoryDto> categoriesDto = categories.stream().map(c -> this.categoryToCategoryDto.convert(c)).toList();
 
-      return new MyResponse(true, "Import successful", 200, categoriesDto);
+      List<CategoryDto> data = new ArrayList<CategoryDto>();
+
+      categories.stream().forEach(c -> {
+         if (c != null)
+            data.add(this.categoryToCategoryDto.convert(c));
+      });
+
+      return new MyResponse(true, "Import successful", 200, data);
    }
 }

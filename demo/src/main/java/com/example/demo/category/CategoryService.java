@@ -2,7 +2,9 @@ package com.example.demo.category;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -60,9 +62,6 @@ public class CategoryService {
 
    public List<Category> findAll() {
       List<Category> categories = this.categoryRepository.findAll();
-      // if (categories.isEmpty())
-      // throw new ObjectNotFoundException("Category not found");
-
       return categories;
    }
 
@@ -127,6 +126,15 @@ public class CategoryService {
       ConvertEng convertEng = new ConvertEng();
 
       List<Category> newCategories = json.stream().map(catJson -> {
+
+         String catNameAscii = new String(convertEng.convert(catJson.name()));
+
+         Specification<Category> spec = Specification.where(CategorySpecs.hasNameAscii(catNameAscii));
+         List<Category> foundedCat = this.categoryRepository.findAll(spec);
+         Boolean isFounded = !foundedCat.isEmpty();
+         if (isFounded)
+            return null;
+
          CategoryDto dto = new CategoryDto(null, convertEng.convert(catJson.name()), catJson.name(), "", 1,
                new ArrayList<>(),
                new ArrayList<>(), new ArrayList<>(), null);
@@ -146,13 +154,10 @@ public class CategoryService {
 
          }).toList();
 
-
-
          // update category attribute order
          String attributeOrder = String.join("_", attributes.stream().map(att -> att.getId().toString()).toList());
          newCategory.setAttribute_order(attributeOrder);
          this.categoryRepository.save(newCategory);
-         
 
          // save brand
          List<Brand> brands = catJson.brands().stream().map(b -> {

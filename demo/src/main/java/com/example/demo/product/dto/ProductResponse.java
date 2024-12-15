@@ -5,8 +5,8 @@ import java.util.List;
 import lombok.Data;
 
 @Data
-public class ProductResponse {
-      List<ProductDTO> products;
+public class ProductResponse<T> {
+      List<T> products;
       Integer page;
       Long count;
       String category_id;
