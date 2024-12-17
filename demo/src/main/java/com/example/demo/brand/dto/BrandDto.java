@@ -4,14 +4,11 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 
 public record BrandDto(
-   Long id,
+            Long id,
 
-   @NotEmpty(message = "name is required")
-   String brand_name,
+            @NotEmpty(message = "brand_name is required") String brand_name,
 
-   @NotEmpty(message = "ascii is required")
-   String brand_ascii,
+            @NotEmpty(message = "brand_name_ascii is required") String brand_name_ascii,
 
-   @NotNull(message = "category is required")
-   Long category_id
-) {}
+            @NotNull(message = "category_id is required") Long category_id) {
+}

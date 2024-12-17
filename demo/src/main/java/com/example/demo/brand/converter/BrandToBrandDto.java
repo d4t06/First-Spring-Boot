@@ -14,7 +14,7 @@ public class BrandToBrandDto implements Converter<Brand, BrandDto> {
         BrandDto brandDto = new BrandDto(
                 source.getId(),
                 source.getBrand_name(),
-                source.getBrand_ascii(),
+                source.getBrand_name_ascii(),
                 source.getCategory_id());
 
         return brandDto;

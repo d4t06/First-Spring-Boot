@@ -16,7 +16,7 @@ public class CorsConfiguration {
 				registry
 					.addMapping("/**")
 					.allowedMethods("*")
-					.allowedOrigins("http://localhost:5173")
+					.allowedOrigins("http://localhost:5173", "https://d4t06.github.io")
 					.allowCredentials(true);
 			}
 		};

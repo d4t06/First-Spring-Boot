@@ -29,12 +29,8 @@ public class BrandController {
 
    @PostMapping("")
    public MyResponse create(@Valid @RequestBody BrandDto brandDto) {
-      try {
-         Brand brand = this.brandService.create(brandDto);
-         return new MyResponse(true, "Add brand successful", 200, brand);
-      } catch (Exception e) {
-         return new MyResponse(false, e.getMessage(), 500);
-      }
+      Brand brand = this.brandService.create(brandDto);
+      return new MyResponse(true, "Add brand successful", 200, brand);
    }
 
    @PutMapping("/{id}")
@@ -42,23 +38,17 @@ public class BrandController {
          @PathVariable Long id,
          @RequestBody BrandDto brandDto) {
 
-      try {
-         Brand brand = this.brandService.update(id, brandDto);
-         return new MyResponse(true, "Update brand successful", 200, brand);
-      } catch (Exception e) {
-         return new MyResponse(false, e.getMessage(), 500);
-      }
+      Brand brand = this.brandService.update(id, brandDto);
+      return new MyResponse(true, "Update brand successful", 200, brand);
+
    }
 
    @DeleteMapping("/{id}")
    public MyResponse delete(
          @PathVariable Long id) {
-      try {
-         this.brandService.delete(id);
-         return new MyResponse(true, "Delete brand successful", 200);
-      } catch (Exception e) {
-         return new MyResponse(false, e.getMessage(), null);
-      }
+      this.brandService.delete(id);
+      return new MyResponse(true, "Delete brand successful", 200);
+
    }
 
 }

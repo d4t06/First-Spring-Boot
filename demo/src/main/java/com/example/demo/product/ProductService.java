@@ -2,164 +2,147 @@ package com.example.demo.product;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
+import com.example.demo.default_storage.DefaultStorageRepository;
+import com.example.demo.default_storage.entity.DefaultStorage;
+import com.example.demo.description.ProductDescService;
+import com.example.demo.description.dto.ProductDescDto;
 import com.example.demo.product.converter.ProductDtoToProduct;
-import com.example.demo.product.converter.ProductToProductDto;
+import com.example.demo.product.converter.ProductToSearchProductDto;
+import com.example.demo.product.converter.ProductToSearchProductDtoLess;
 import com.example.demo.product.dto.ProductDTO;
-import com.example.demo.product.dto.ProductResponse;
+import com.example.demo.product.dto.SearchProductDto;
 import com.example.demo.product.entity.Product;
+import com.example.demo.system.MyResponse;
 import com.example.demo.system.exception.ObjectNotFoundException;
 
 @Service
 public class ProductService {
 
-    private final ProductRepository productRepository;
+   private final ProductRepository productRepository;
 
-    private final ProductDtoToProduct productDtoToProduct;
+   private final ProductDtoToProduct productDtoToProduct;
 
-    private final ProductToProductDto productToProductDto;
+   private final ProductToSearchProductDto productToSearchProductDto;
 
-    public ProductService(
-            ProductToProductDto productToProductDto,
-            ProductRepository productRepository,
-            ProductDtoToProduct productDtoToProduct) {
-        this.productRepository = productRepository;
-        this.productDtoToProduct = productDtoToProduct;
-        this.productToProductDto = productToProductDto;
-    }
+   private final ProductDescService productDescService;
 
-    public ProductResponse findAll(
-            int page,
-            int pageSize,
-            Integer categoryID,
-            List<String> brandID,
-            String column,
-            String type,
-            List<String> price) {
+   private final DefaultStorageRepository defaultStorageRepository;
 
-        Sort sort;
-        Pageable pageable;
+   public ProductService(
+         ProductRepository productRepository,
+         ProductDescService productDescService,
+         ProductToSearchProductDto productToSearchProductDto,
+         DefaultStorageRepository defaultStorageRepository,
+         ProductToSearchProductDtoLess productToSearchProductDtoLess,
+         ProductDtoToProduct productDtoToProduct) {
+      this.productRepository = productRepository;
+      this.productDtoToProduct = productDtoToProduct;
+      this.productDescService = productDescService;
+      this.defaultStorageRepository = defaultStorageRepository;
+      this.productToSearchProductDto = productToSearchProductDto;
+   }
 
-        if (column != null && type != null) {
-            if (type.equalsIgnoreCase("asc"))
-                sort = Sort.by(Sort.Direction.ASC, column);
-            else
-                sort = Sort.by(Sort.Direction.DESC, column);
+   public Page<Product> findAllByCriteria(
+         Pageable pageable,
+         ProductFilter filter) {
 
-            pageable = PageRequest.of(page, pageSize).withSort(sort);
-        } else {
+      Specification<Product> spec = Specification.where(null);
 
-            pageable = PageRequest.of(page, pageSize);
-        }
+      if (StringUtils.hasLength(filter.category_id())) {
+         spec = spec.and(ProductSpecs.hasCategoryID(filter.category_id()));
+      }
 
-        Page<Product> productPage;
+      if (filter.brand_id() != null) {
+         spec = spec.and(ProductSpecs.hasBrandIDs(filter.brand_id()));
+      }
 
-        if (categoryID == null)
-            productPage = this.productRepository.findAll(pageable);
-        else if (brandID != null)
-            productPage = this.productRepository.findAllWithCategoryAndBrand(pageable, categoryID, brandID);
-        else
-            productPage = this.productRepository.findAllWithCategory(pageable, categoryID);
+      if (filter.price() != null) {
+         spec = spec.and(ProductSpecs.betweenPrice(Integer.parseInt(filter.price().get(0)) * (int) Math.pow(10, 6),
+               Integer.parseInt(filter.price().get(1)) * (int) Math.pow(10, 6)));
+      }
 
-        List<Product> listOfProducts = productPage.getContent();
+      Sort sort = pageable.getSort().isSorted() ? Sort.by(
+            pageable.getSort().get()
+                  .map(order -> order.getProperty().equals("price")
+                        ? Sort.Order
+                              .by("defaultStorage.storage.defaultStorageCombine.combine.price")
+                              .with(order.getDirection())
+                        : order)
+                  .collect(Collectors.toList()))
+            : Sort.by(Sort.Direction.DESC, "id");
 
-        List<ProductDTO> productsDTO = new ArrayList<>();
-        for (Product product : listOfProducts) {
-            ProductDTO productDTO = this.productToProductDto.convert(product);
-            productsDTO.add(productDTO);
-        }
+      Page<Product> productPage = this.productRepository.findAll(spec, PageRequest.of(
+            pageable.getPageNumber(), pageable.getPageSize(), sort));
 
-        ProductResponse res = new ProductResponse();
+      return productPage;
 
-        res.setProducts(productsDTO);
-        res.setPage(page);
-        res.setPageSize(pageSize);
-        res.setCount(productPage.getTotalElements());
+   }
 
-        res.setBrandID(brandID);
-        res.setCategoryID(categoryID);
-        res.setIsLast(productPage.isLast());
-        res.setColumn(column);
-        res.setType(type);
-        res.setPrice(price);
+   public MyResponse search(String key) {
 
-        return res;
+      Specification<Product> spec = Specification.where(ProductSpecs.containName(key));
 
-    }
+      List<Product> products = this.productRepository.findAll(spec);
+      List<SearchProductDto> dto = products.stream().map(p -> this.productToSearchProductDto.convert(p)).toList();
 
-    public ProductResponse search(String keyword,
-            int page,
-            int pageSize,
-            String column,
-            String type) {
-        Pageable pageable = PageRequest.of(page, 2);
-        Page<Product> productPage = this.productRepository.findByKeyword(pageable, keyword);
+      return new MyResponse(true, "search product successful", 200, dto);
 
-        List<Product> products = productPage.getContent();
+   }
 
-        List<ProductDTO> productsDTO = new ArrayList<>();
-        for (Product product : products) {
-            ProductDTO productDTO = this.productToProductDto.convert(product);
-            productsDTO.add(productDTO);
-        }
+   public Product findOne(Long product_id) {
+      return this.productRepository.findById(product_id).orElseThrow(
+            () -> new ObjectNotFoundException(""));
 
-        ProductResponse res = new ProductResponse();
-        res.setProducts(productsDTO);
-        res.setPage(page);
-        res.setPageSize(pageSize);
-        res.setCount(productPage.getTotalElements());
+   }
 
-        res.setBrandID(new ArrayList<>());
-        res.setCategoryID(null);
-        res.setIsLast(productPage.isLast());
-        res.setColumn(column);
-        res.setType(type);
+   public Product create(ProductDTO createProductDTO) {
+      Product product = this.productDtoToProduct.convert(createProductDTO);
 
-        return res;
+      Product newProduct = this.productRepository.save(product);
 
-    }
+      // add description
+      ProductDescDto descDto = new ProductDescDto(newProduct.getId(), newProduct.getProduct_name());
+      this.productDescService.add(descDto);
 
-    public Product findOne(String product_ascii) {
-        List<Product> products = this.productRepository.findByProductAscii(product_ascii);
+      // add default storage
+      DefaultStorage defaultStorage = new DefaultStorage();
+      defaultStorage.setProductId(newProduct.getId());
+      this.defaultStorageRepository.save(defaultStorage);
 
-        if (products.size() != 1)
-            throw new ObjectNotFoundException("Product not found");
-        return products.get(0);
+      return newProduct;
+   }
 
-    }
+   public Product update(Long productId, ProductDTO updateDto) {
+      return this.productRepository.findById(productId)
+            .map(oldProduct -> {
+               oldProduct.setBrandId(updateDto.brand_id());
+               oldProduct.setCategoryId(updateDto.category_id());
+               oldProduct.setProduct_name(updateDto.product_name());
+               oldProduct.setImage_url(updateDto.image_url());
 
-    public Product create(ProductDTO createProductDTO) {
-        Product product = this.productDtoToProduct.convert(createProductDTO);
-        return this.productRepository.save(product);
-    }
+               Product product = this.productRepository.save(oldProduct);
+               return product;
+            })
+            .orElseThrow(() -> new ObjectNotFoundException("Product not found"));
 
-    public Product update(Long id, ProductDTO updateDto) {
-        return this.productRepository.findById(id)
-                .map(oldProduct -> {
-                    oldProduct.setBrandId(updateDto.brand_id());
-                    oldProduct.setCategoryId(updateDto.category_id());
-                    oldProduct.setProductAscii(updateDto.product_ascii());
-                    oldProduct.setProduct_name(updateDto.product_name());
-                    oldProduct.setImage_url(updateDto.image_url());
-                    oldProduct.setPrice(updateDto.price());
+   }
 
-                    Product product = this.productRepository.save(oldProduct);
-                    return product;
-                })
-                .orElseThrow(() -> new ObjectNotFoundException("Product not found"));
+   public void delete(Long productId) {
 
-    }
+      this.productRepository.findById(productId)
+            .orElseThrow(() -> new ObjectNotFoundException("Product not found"));
 
-    public void delete(Long id) {
-        this.productRepository.findById(id)
-                .orElseThrow(() -> new ObjectNotFoundException("Product not found"));
-
-        this.productRepository.deleteById(id);
-    }
+      this.productRepository.deleteById(productId);
+   }
 
 }

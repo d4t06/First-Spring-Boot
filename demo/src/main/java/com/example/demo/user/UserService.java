@@ -38,7 +38,7 @@ public class UserService implements UserDetailsService {
     }
 
     public UserService(
-        JwtProvider jwtProvider,
+            JwtProvider jwtProvider,
             PasswordEncoder passwordEncoder,
             UserRepository userRepository,
             UserDtoToUser userDtoToUser) {
@@ -60,6 +60,15 @@ public class UserService implements UserDetailsService {
     public User create(UserDto userDto) {
         User user = this.userDtoToUser.convert(userDto);
         user.setPassword(this.passwordEncoder.encode(userDto.password()));
+
+        return this.userRepository.save(user);
+    }
+
+    public User init(UserDto userDto) {
+        User user = this.userDtoToUser.convert(userDto);
+        user.setPassword(this.passwordEncoder.encode(userDto.password()));
+
+        user.setRole("ADMIN USER");
 
         return this.userRepository.save(user);
     }

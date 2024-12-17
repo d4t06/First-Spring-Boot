@@ -4,10 +4,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -37,7 +39,12 @@ public class ImageService {
 
    public ImageResponse findAll(int page) {
       Pageable pageable = PageRequest.of(page, 12);
-      Page<Image> imagePage = this.imageRepository.findAll(pageable);
+
+      Sort sort = Sort.by(Sort.Direction.DESC, "id");
+
+      Page<Image> imagePage = this.imageRepository
+            .findAll(PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(),
+                  sort));
 
       List<Image> images = imagePage.getContent();
 
@@ -64,10 +71,23 @@ public class ImageService {
 
       Image image = new Image();
 
-      image.setName(multipartFile.getOriginalFilename());
+      image.setImage_name(multipartFile.getOriginalFilename());
       image.setImage_url((String) result.get("url"));
       image.setPublicID((String) result.get("public_id"));
       image.setSize(Math.round(multipartFile.getSize() / 1024));
+
+      return this.imageRepository.save(image);
+   }
+
+   public Image saveFromUrl(String url) throws IOException {
+      Map<?, ?> result = this.cloudinaryService.upload(url);
+
+      Image image = new Image();
+
+      image.setImage_name(UUID.randomUUID().toString());
+      image.setImage_url((String) result.get("url"));
+      image.setPublicID((String) result.get("public_id"));
+      image.setSize(Math.round(result.size() / 1024));
 
       return this.imageRepository.save(image);
    }

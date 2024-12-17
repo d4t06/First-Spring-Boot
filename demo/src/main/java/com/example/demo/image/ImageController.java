@@ -27,6 +27,7 @@ public class ImageController {
    }
 
    @GetMapping("")
+   @PreAuthorize("hasAuthority('ROLE_ADMIN')")
    public MyResponse getAllImage(
          @RequestParam(value = "page", required = false, defaultValue = "0") int page) {
       ImageResponse imageResponse = this.imageService.findAll(page);

@@ -3,6 +3,7 @@ package com.example.demo.category.entity;
 import java.util.ArrayList;
 import java.util.List;
 import com.example.demo.brand.entity.Brand;
+import com.example.demo.category_attribute.entity.CategoryAttribute;
 import com.example.demo.price_range.entity.PriceRange;
 import com.example.demo.product.entity.Product;
 import jakarta.persistence.CascadeType;
@@ -16,9 +17,8 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import lombok.Data;
 
-@Entity(name = "categories")
 @Data
-
+@Entity(name = "categories")
 
 public class Category {
     @Id
@@ -32,7 +32,10 @@ public class Category {
     private String category_name;
 
     @Column(nullable = false, unique = true)
-    private String category_ascii;
+    private String category_name_ascii;
+
+    @Column(nullable = false)
+    private String attribute_order;
 
     // ***************
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -48,6 +51,10 @@ public class Category {
     // ***************
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PriceRange> priceRanges = new ArrayList<PriceRange>();
+
+    // ***************
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<CategoryAttribute> categoryAttributes = new ArrayList<CategoryAttribute>();
 
     // ***************
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "category")

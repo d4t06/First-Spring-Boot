@@ -1,9 +1,11 @@
 package com.example.demo.slider;
 
+import java.util.List;
+
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -45,13 +47,24 @@ public class SliderController {
    }
 
    @PostMapping("/images")
-   public MyResponse createSliderImage(
-         @RequestBody SliderImageDto sliderImageDto) {
-      SliderImage sliderImage = this.sliderService.createSliderImage(sliderImageDto);
+   public MyResponse createSliderImages(
+         @RequestBody List<SliderImageDto> sliderImagesDto) {
+      List<SliderImage> sliderImages = this.sliderService.createSliderImages(sliderImagesDto);
 
-      SliderImageDto newSlider = this.sliderImageToSliderImageDto.convert(sliderImage);
+      List<SliderImageDto> newSliderImages = sliderImages.stream()
+            .map(sliderImage -> this.sliderImageToSliderImageDto.convert(sliderImage)).toList();
 
-      return new MyResponse(true, "Add slider image successful", 200, newSlider);
+      return new MyResponse(true, "Add slider image successful", 200, newSliderImages);
+   }
+
+   @PutMapping("/images/{id}")
+   public MyResponse updateSliderImage(
+         @RequestBody SliderImageDto sliderImagesDto,
+         @PathVariable Long id) {
+
+      sliderService.updateSliderImage(sliderImagesDto, id);
+
+      return new MyResponse(true, "Add slider image successful", 200);
    }
 
    @DeleteMapping("/images/{id}")

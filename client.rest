@@ -1,6 +1,21 @@
 ### 
 GET http://localhost:8080/api/categories
 
+###
+GET http://localhost:8080/api/products
+
+### 
+GET http://localhost:8080/api/products/search?q=iphone 
+
+
+### 
+POST http://localhost:8080/api/products/search?page=0&size=2&sort=price,desc
+Content-Type: application/json
+
+{
+    "category_id": "8"
+}
+
 
 ###
 POST http://localhost:8080/api/brands
@@ -32,7 +47,7 @@ content-Type: application/json
 
 
 ###
-DELETE http://localhost:8080/api/products/1
+DELETE http://localhost:8080/api/products/6
 # Authorization: Bearer eyJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJzZWxmIiwic3ViIjoiYWRtaW4iLCJleHAiOjE3MTAzNTQ0NDAsImlhdCI6MTcxMDM0NzI0MCwiYXV0aG9yaXRpZXMiOiJST0xFX0FETUlOUk9MRV9VU0VSIn0.jeeg38EFo-Fm1QZwgmS8IbALZQwIB4hA0MUkTj7mZA78qFhDBTGanpjxSPFu0NtwPIBVmiSpOV5cnIfb55qlGzJ57o0TUsvxinUjSt6ARkJ4iwlK9biij3Fzyh0BSx1X89Uo9SxHzVFvOdbYjPwTXfWEwOrzq0kM0RSuPqOrjo8VqzqLKMI1ybS4q-7VceX7WYKN7NeXzwokJ8k82Nb6a60f39r7IWPmCb-yD8l3HF63gHxH42N3-0sGKd2Wz8a5p4pp1sig02kTjdI3DUKZADXFlivpA0XDW4cJti5VCECZdHKwOqwUICzO3_EHa2cj4gmfFmKjeeGJU0b2qKI4zw
 
 

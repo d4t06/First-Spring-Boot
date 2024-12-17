@@ -24,10 +24,10 @@ import lombok.NoArgsConstructor;
 public class Image {
 
    @Id
-   @GeneratedValue(strategy = GenerationType.IDENTITY)
+   @GeneratedValue(strategy = GenerationType.SEQUENCE)
    private long id;
 
-   private String name;
+   private String image_name;
 
    private String image_url;
 

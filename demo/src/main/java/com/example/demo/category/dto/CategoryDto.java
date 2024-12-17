@@ -3,26 +3,27 @@ package com.example.demo.category.dto;
 import java.util.List;
 
 import com.example.demo.brand.dto.BrandDto;
+import com.example.demo.category_attribute.dto.CategoryAttributeDto;
 import com.example.demo.price_range.dto.PriceRangeDto;
 
 import lombok.NonNull;
 
-
 public record CategoryDto(
-        @NonNull 
-        String category_ascii,
-        
-        @NonNull 
-        String category_name,
+                Long id,
 
-        Integer is_show,
+                @NonNull String category_name_ascii,
 
-        Long id,
+                @NonNull String category_name,
 
-        List<BrandDto> brands,
+                String attribute_order,
 
-        List<PriceRangeDto> price_ranges,
+                Integer is_show,
 
-        CategorySliderDto category_slider
-        ) {
+                List<BrandDto> brands,
+
+                List<PriceRangeDto> price_ranges,
+
+                List<CategoryAttributeDto> attributes,
+
+                CategorySliderDto category_slider) {
 }

@@ -1,109 +1,184 @@
 package com.example.demo.category;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.example.demo.brand.BrandRepository;
+import com.example.demo.brand.entity.Brand;
 import com.example.demo.category.converter.CategoryDtoToCategory;
 import com.example.demo.category.converter.CategorySliderDtoToCategorySlider;
 import com.example.demo.category.dto.CategoryDto;
 import com.example.demo.category.dto.CategorySliderDto;
+import com.example.demo.category.dto.JsonCategoryDto;
 import com.example.demo.category.entity.Category;
 import com.example.demo.category.entity.CategorySlider;
+import com.example.demo.category_attribute.CategoryAttributerRepository;
+import com.example.demo.category_attribute.entity.CategoryAttribute;
 import com.example.demo.slider.entity.Slider;
 import com.example.demo.slider.repository.SliderRepository;
+import com.example.demo.system.ConvertEng;
 import com.example.demo.system.exception.ObjectNotFoundException;
 
 @Service
 @Transactional
 public class CategoryService {
 
-    private final CategoryRepository categoryRepository;
+   private final CategoryRepository categoryRepository;
 
-    private final CategorySliderRepository categorySliderRepository;
+   private final CategorySliderRepository categorySliderRepository;
 
-    private final SliderRepository sliderRepository;
+   private final SliderRepository sliderRepository;
 
-    private final CategoryDtoToCategory categoryDtoToCategory;
+   private final CategoryAttributerRepository categoryAttributerRepository;
 
-    private final CategorySliderDtoToCategorySlider categorySliderDtoToCategorySlider;
+   private final CategoryDtoToCategory categoryDtoToCategory;
 
-    public CategoryService(
-            CategoryRepository categoryRepository,
-            CategorySliderRepository categorySliderRepository,
-            CategoryDtoToCategory categoryDtoToCategory,
-            SliderRepository sliderRepository,
-            CategorySliderDtoToCategorySlider categorySliderDtoToCategorySlider) {
+   private final BrandRepository brandRepository;
 
-        this.categoryRepository = categoryRepository;
-        this.categorySliderRepository = categorySliderRepository;
-        this.categoryDtoToCategory = categoryDtoToCategory;
-        this.categorySliderDtoToCategorySlider = categorySliderDtoToCategorySlider;
-        this.sliderRepository = sliderRepository;
-    }
+   private final CategorySliderDtoToCategorySlider categorySliderDtoToCategorySlider;
 
-    public List<Category> findAll() {
-        List<Category> categories = this.categoryRepository.findAll();
-        // if (categories.isEmpty())
-        // throw new ObjectNotFoundException("Category not found");
+   public CategoryService(
+         CategoryRepository categoryRepository,
+         CategorySliderRepository categorySliderRepository,
+         CategoryDtoToCategory categoryDtoToCategory,
+         SliderRepository sliderRepository,
+         BrandRepository brandRepository,
+         CategoryAttributerRepository categoryAttributerRepository,
+         CategorySliderDtoToCategorySlider categorySliderDtoToCategorySlider) {
 
-        return categories;
-    }
+      this.categoryRepository = categoryRepository;
+      this.categorySliderRepository = categorySliderRepository;
+      this.categoryDtoToCategory = categoryDtoToCategory;
+      this.categorySliderDtoToCategorySlider = categorySliderDtoToCategorySlider;
+      this.sliderRepository = sliderRepository;
+      this.categoryAttributerRepository = categoryAttributerRepository;
+      this.brandRepository = brandRepository;
+   }
 
-    public Category findOne(Long id) {
-        return this.categoryRepository.findById(id)
-                .orElseThrow(() -> new ObjectNotFoundException("Category not found"));
+   public List<Category> findAll() {
+      List<Category> categories = this.categoryRepository.findAll();
+      return categories;
+   }
 
-    }
+   public Category findOne(Long id) {
+      return this.categoryRepository.findById(id)
+            .orElseThrow(() -> new ObjectNotFoundException("Category not found"));
 
-    // add category
-    // add slider
-    // add category slider
-    public Category create(CategoryDto createDto) {
-        Category category = this.categoryDtoToCategory.convert(createDto);
+   }
 
-        Category newCategory = this.categoryRepository.save(category);
+   // add category
+   // add slider
+   // add category slider
+   public Category create(CategoryDto createDto) {
+      Category category = this.categoryDtoToCategory.convert(createDto);
 
-        Slider slider = new Slider();
-        slider.setName("slider for " + createDto.category_name());
-        Slider newSlider = this.sliderRepository.save(slider);
+      Category newCategory = this.categoryRepository.save(category);
 
-        CategorySlider categorySlider = new CategorySlider();
-        categorySlider.setCategory_id(category.getId());
-        categorySlider.setSlider_id(newSlider.getId());
+      Slider slider = new Slider();
+      slider.setName("slider for " + createDto.category_name());
+      Slider newSlider = this.sliderRepository.save(slider);
 
-        CategorySlider newCategorySlider = this.categorySliderRepository.save(categorySlider);
+      CategorySlider categorySlider = new CategorySlider();
+      categorySlider.setCategory_id(category.getId());
+      categorySlider.setSlider_id(newSlider.getId());
 
-        newCategorySlider.setSlider(newSlider);
-        newCategory.setCategorySlider(newCategorySlider);
+      CategorySlider newCategorySlider = this.categorySliderRepository.save(categorySlider);
 
-        return newCategory;
-    }
+      newCategorySlider.setSlider(newSlider);
+      newCategory.setCategorySlider(newCategorySlider);
 
-    public void createCategorySlider(CategorySliderDto categorySliderDto) {
-        CategorySlider categorySlider = this.categorySliderDtoToCategorySlider.convert(categorySliderDto);
+      return newCategory;
+   }
 
-        this.categorySliderRepository.save(categorySlider);
-    }
+   public void createCategorySlider(CategorySliderDto categorySliderDto) {
+      CategorySlider categorySlider = this.categorySliderDtoToCategorySlider.convert(categorySliderDto);
 
-    public Category update(Long id, CategoryDto updateDto) {
-        return this.categoryRepository.findById(id)
-                .map(oldCategory -> {
-                    oldCategory.setCategory_ascii(updateDto.category_ascii());
-                    oldCategory.setCategory_name(updateDto.category_name());
+      this.categorySliderRepository.save(categorySlider);
+   }
 
-                    Category updatedCategory = this.categoryRepository.save(oldCategory);
-                    return updatedCategory;
-                })
-                .orElseThrow(() -> new ObjectNotFoundException("Category not found"));
-    }
+   public Category update(Long id, CategoryDto updateDto) {
+      return this.categoryRepository.findById(id)
+            .map(oldCategory -> {
+               oldCategory.setCategory_name_ascii(updateDto.category_name_ascii());
+               oldCategory.setCategory_name(updateDto.category_name());
+               oldCategory.setAttribute_order(updateDto.attribute_order());
 
-    public void delete(Long id) {
-        this.categoryRepository.findById(id)
-                .orElseThrow(() -> new ObjectNotFoundException("Category not found"));
+               Category updatedCategory = this.categoryRepository.save(oldCategory);
+               return updatedCategory;
+            })
+            .orElseThrow(() -> new ObjectNotFoundException("Category not found"));
+   }
 
-        this.categoryRepository.deleteById(id);
-    }
+   public void delete(Long id) {
+      this.categoryRepository.findById(id)
+            .orElseThrow(() -> new ObjectNotFoundException("Category not found"));
 
+      this.categoryRepository.deleteById(id);
+   }
+
+   public List<Category> jsonImport(List<JsonCategoryDto> json) {
+
+      ConvertEng convertEng = new ConvertEng();
+
+      List<Category> newCategories = json.stream().map(catJson -> {
+
+         String catNameAscii = new String(convertEng.convert(catJson.name()));
+
+         Specification<Category> spec = Specification.where(CategorySpecs.hasNameAscii(catNameAscii));
+         List<Category> foundedCat = this.categoryRepository.findAll(spec);
+         Boolean isFounded = !foundedCat.isEmpty();
+         if (isFounded)
+            return null;
+
+         CategoryDto dto = new CategoryDto(null, convertEng.convert(catJson.name()), catJson.name(), "", 1,
+               new ArrayList<>(),
+               new ArrayList<>(), new ArrayList<>(), null);
+         Category newCategory = this.create(dto);
+
+         // save attribute
+         List<CategoryAttribute> attributes = catJson.attributes().stream().map(att -> {
+
+            CategoryAttribute entityCategoryAttribute = new CategoryAttribute();
+            entityCategoryAttribute.setAttribute_name(att);
+            entityCategoryAttribute.setAttribute_name_ascii(convertEng.convert(att));
+            entityCategoryAttribute.setCategory_id(newCategory.getId());
+
+            CategoryAttribute newCategoryAttribute = this.categoryAttributerRepository.save(entityCategoryAttribute);
+
+            return newCategoryAttribute;
+
+         }).toList();
+
+         // update category attribute order
+         String attributeOrder = String.join("_", attributes.stream().map(att -> att.getId().toString()).toList());
+         newCategory.setAttribute_order(attributeOrder);
+         this.categoryRepository.save(newCategory);
+
+         // save brand
+         List<Brand> brands = catJson.brands().stream().map(b -> {
+
+            Brand entity = new Brand();
+            entity.setBrand_name(b);
+            entity.setBrand_name_ascii(convertEng.convert(b));
+            entity.setCategory_id(newCategory.getId());
+
+            Brand newBrand = this.brandRepository.save(entity);
+
+            return newBrand;
+
+         }).toList();
+
+         newCategory.setCategoryAttributes(attributes);
+         newCategory.setBrands(brands);
+
+         return newCategory;
+      }).toList();
+
+      return newCategories;
+   }
 }

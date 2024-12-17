@@ -20,6 +20,8 @@ public class BrandService {
       this.brandDtoToBrand = brandDtoToBrand;
    }
 
+
+   
    public Brand create(BrandDto brandDto) {
       Brand brand = this.brandDtoToBrand.convert(brandDto);
 
@@ -30,7 +32,6 @@ public class BrandService {
 
       return this.brandRepository.findById(id)
             .map(oldBrand -> {
-              oldBrand.setBrand_ascii(brandDto.brand_ascii());
               oldBrand.setBrand_name(brandDto.brand_name());
               oldBrand.setCategory_id(brandDto.category_id());
 

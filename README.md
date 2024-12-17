@@ -17,3 +17,8 @@
 - IDENTIFY
 - SEQUENCE
 - TABLE
+
+
+java -jar target/*.jar
+
+docker build -t d4t06/spring-mobile:latest .

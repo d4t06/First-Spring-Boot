@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -11,6 +12,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.oauth2.server.resource.InvalidBearerTokenException;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingRequestCookieException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -91,6 +93,24 @@ public class ExceptionHandlerAdvice {
     @ResponseStatus(HttpStatus.NOT_FOUND)
     MyResponse NotFoundEndPoint(Exception ex) {
         return new MyResponse(false, "The resource not found", HttpStatus.NOT_FOUND.value());
+    }
+
+    // METHOD NOT SUPPORT
+    @ExceptionHandler({
+            HttpRequestMethodNotSupportedException.class,
+    })
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    MyResponse MethodNotSupport(Exception ex) {
+        return new MyResponse(false, ex.getMessage(), HttpStatus.NOT_FOUND.value());
+    }
+
+    // Database Integrity
+    @ExceptionHandler({
+            DataIntegrityViolationException.class,
+    })
+    @ResponseStatus(HttpStatus.CONFLICT)
+    MyResponse DataIntegrity(Exception ex) {
+        return new MyResponse(false, "Data Integrity Violation", HttpStatus.CONFLICT.value());
     }
 
     /**
