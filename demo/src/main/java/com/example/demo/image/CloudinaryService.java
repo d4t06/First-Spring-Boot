@@ -21,7 +21,7 @@ public class CloudinaryService {
          "api_secret", "");
 
    Map<?, ?> uploadParams = ObjectUtils.asMap(
-         "folder", "vue-mobile",
+         "folder", "test",
          "resource_type", "auto");
 
    public CloudinaryService() {

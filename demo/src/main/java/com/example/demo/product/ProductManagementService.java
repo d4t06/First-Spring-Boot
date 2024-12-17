@@ -3,6 +3,8 @@ package com.example.demo.product;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import com.example.demo.color.ColorRepository;
@@ -23,10 +25,10 @@ import com.example.demo.product_attribute.ProductAttributeRepository;
 import com.example.demo.product_attribute.entity.ProductAttribute;
 import com.example.demo.product_slider.ProductSliderRepository;
 import com.example.demo.product_slider.entity.ProductSlider;
-import com.example.demo.slider.SliderService;
-import com.example.demo.slider.dto.SliderDto;
-import com.example.demo.slider.dto.SliderImageDto;
 import com.example.demo.slider.entity.Slider;
+import com.example.demo.slider.entity.SliderImage;
+import com.example.demo.slider.repository.SliderImageRepository;
+import com.example.demo.slider.repository.SliderRepository;
 import com.example.demo.storage.DefaultStorageCombineRepository;
 import com.example.demo.storage.StorageRepository;
 import com.example.demo.storage.entity.DefaultStorageCombine;
@@ -49,7 +51,9 @@ public class ProductManagementService {
 
    private final ImageService imageService;
 
-   private final SliderService sliderService;
+   private final SliderRepository sliderRepository;
+
+   private final SliderImageRepository sliderImageRepository;
 
    private final ProductSliderRepository productSliderRepository;
 
@@ -68,11 +72,12 @@ public class ProductManagementService {
          StorageRepository storageRepository,
          CombineRepository combineRepository,
          ImageService imageService,
-         SliderService sliderService,
          ProductSliderRepository productSliderRepository,
          DefaultStorageRepository defaultStorageRepository,
          DefaultStorageCombineRepository defaultStorageCombineRepository,
          ProductDescRepository productDescRepository,
+         SliderRepository sliderRepository,
+         SliderImageRepository sliderImageRepository,
          ProductToSearchProductDtoLess productToSearchProductDtoLess,
          ProductAttributeRepository productAttributeRepository) {
       this.productRepository = productRepository;
@@ -81,12 +86,13 @@ public class ProductManagementService {
       this.productAttributeRepository = productAttributeRepository;
       this.combineRepository = combineRepository;
       this.imageService = imageService;
-      this.sliderService = sliderService;
       this.productSliderRepository = productSliderRepository;
       this.defaultStorageRepository = defaultStorageRepository;
       this.defaultStorageCombineRepository = defaultStorageCombineRepository;
       this.productDescRepository = productDescRepository;
       this.productToSearchProductDtoLess = productToSearchProductDtoLess;
+      this.sliderRepository = sliderRepository;
+      this.sliderImageRepository = sliderImageRepository;
    }
 
    public Product jsonImport(JsonProductDto json) throws Error {
@@ -112,6 +118,7 @@ public class ProductManagementService {
          productData.setImage_url("");
 
          // save product
+
          Product newProduct = this.productRepository.save(productData);
 
          // save description
@@ -120,45 +127,72 @@ public class ProductManagementService {
          productDescEntity.setProductId(newProduct.getId());
          productDescEntity.setContent(json.description());
 
-         this.productDescRepository.save(productDescEntity);
-
          // save colors
-         List<Color> newColors = json.colors().stream().map(cl -> {
+         List<Color> newColorEntities = json.colors().stream().map(cl -> {
 
             Color colorData = new Color();
             colorData.setProductId(newProduct.getId());
             colorData.setColor_name(cl);
             colorData.setColor_name_ascii(convertEng.convert(cl));
 
-            return this.colorRepository.save(colorData);
+            return colorData;
          }).toList();
 
-         Thread.sleep(0);
-
          // save storages
-         List<Storage> newStorages = json.storages().stream().map(s -> {
+         List<Storage> newStorageEntities = json.storages().stream().map(s -> {
 
             Storage storageData = new Storage();
             storageData.setProductId(newProduct.getId());
             storageData.setStorage_name(s);
             storageData.setStorage_name_ascii(convertEng.convert(s));
-            return this.storageRepository.save(storageData);
+            return storageData;
          }).toList();
 
          // save attributes
-         json.attributes().stream().map(attr -> {
+         List<ProductAttribute> newProductAttributeEntities = json.attributes().stream().map(attr -> {
             ProductAttribute data = new ProductAttribute();
 
             data.setProduct_id(newProduct.getId());
             data.setValue(attr.value());
             data.setCategory_attribute_id(attr.category_attribute_id());
 
-            return this.productAttributeRepository.save(data);
+            return data;
 
          }).toList();
 
+         /* stage 1 */
+         System.out.println((new Date().getTime() - start.getTime()) / 1000 + "s" + ": Stage 1");
+
+         CompletableFuture<ProductDesc> descFuture = CompletableFuture.supplyAsync(() -> {
+            return this.productDescRepository.save(productDescEntity);
+         });
+
+         CompletableFuture<List<ProductAttribute>> productAttributeFuture = CompletableFuture.supplyAsync(() -> {
+            return this.productAttributeRepository.saveAll(newProductAttributeEntities);
+         });
+
+         CompletableFuture<List<Color>> colorFuture = CompletableFuture.supplyAsync(() -> {
+            System.out.println((new Date().getTime() - start.getTime()) / 1000 + "s" + ": Save color");
+            return this.colorRepository.saveAll(newColorEntities);
+
+         });
+
+         CompletableFuture<List<Storage>> storageFuture = CompletableFuture.supplyAsync(() -> {
+            System.out.println((new Date().getTime() - start.getTime()) / 1000 + "s" + ": Save storage");
+
+            return this.storageRepository.saveAll(newStorageEntities);
+         });
+
+         CompletableFuture<Void> stage1Future = CompletableFuture.allOf(descFuture, colorFuture, storageFuture,
+               productAttributeFuture);
+
+         stage1Future.get();
+
+         List<Color> newColors = colorFuture.get();
+         List<Storage> newStorages = storageFuture.get();
+
          // save combines
-         List<Combine> newCombines = new ArrayList<>();
+         List<Combine> newCombineEntities = new ArrayList<>();
          for (Color cl : newColors) {
 
             for (Storage sr : newStorages) {
@@ -171,25 +205,46 @@ public class ProductManagementService {
                data.setPrice(json.price());
                data.setQuantity(1);
 
-               Combine newCombine = this.combineRepository.save(data);
-               newCombines.add(newCombine);
+               newCombineEntities.add(data);
             }
 
          }
 
          // save images for sliders
-
          List<String> imagesList = new ArrayList<>();
          imagesList.add(json.image());
          imagesList.addAll(json.sliders());
 
-         List<Image> imageResponses = imagesList.parallelStream().map(url -> {
-            try {
-               return this.imageService.saveFromUrl(url);
-            } catch (Exception e) {
-               throw new Error(e.getMessage());
-            }
-         }).toList();
+         /** Stage 2 */
+
+         System.out.println((new Date().getTime() - start.getTime()) / 1000 + "s" + ": Stage 2, Upload image");
+
+         CompletableFuture<List<Combine>> combineFuture = CompletableFuture.supplyAsync(() -> {
+            System.out.println((new Date().getTime() - start.getTime()) / 1000 + "s" + ": Save combine");
+
+            return this.combineRepository.saveAll(newCombineEntities);
+         });
+
+         CompletableFuture<List<Image>> imageFuture = CompletableFuture.supplyAsync(() -> {
+            System.out.println((new Date().getTime() - start.getTime()) / 1000 + "s" + ": Upload image");
+
+            return imagesList.parallelStream().map(url -> {
+               try {
+                  return this.imageService.saveFromUrl(url);
+               } catch (Exception e) {
+                  throw new Error(e.getMessage());
+               }
+            }).toList();
+
+         });
+
+         CompletableFuture<Void> stage2Future = CompletableFuture.allOf(combineFuture, imageFuture);
+         stage2Future.get();
+
+         List<Combine> newCombines = combineFuture.get();
+         List<Image> imageResponses = imageFuture.get();
+
+         System.out.println((new Date().getTime() - start.getTime()) / 1000 + "s" + ": Save product image");
 
          // save product image
          if (json.image() != null) {
@@ -197,51 +252,82 @@ public class ProductManagementService {
             this.productRepository.save(newProduct);
          }
 
-         for (Color cl : newColors) {
+         System.out.println((new Date().getTime() - start.getTime()) / 1000 + "s" + ": Save slider");
 
-            // save slider
-            Slider newSlider = this.sliderService.create(new SliderDto(null,
-                  new String(newProduct.getProduct_name_ascii() + " " + cl.getColor_name_ascii()), null));
+         // save slider
+         List<Slider> newSliderEntities = newColors.stream().map(cl -> {
+
+            Slider data = new Slider();
+
+            data.setName(newProduct.getProduct_name_ascii() + " " + cl.getColor_name_ascii());
+
+            return data;
+
+         }).toList();
+
+         List<Slider> newSliders = this.sliderRepository.saveAll(newSliderEntities);
+
+         List<ProductSlider> newProductSliderEntities = new ArrayList<>();
+
+         for (int i = 0; i < newSliders.size(); i++) {
+            Color cl = newColors.get(i);
+            Slider sd = newSliders.get(i);
 
             ProductSlider data = new ProductSlider();
 
             data.setColor_id(cl.getId());
-            data.setSlider_id(newSlider.getId());
+            data.setSlider_id(sd.getId());
 
-            // save product slider
-            this.productSliderRepository.save(data);
-
-            for (Image image : imageResponses) {
-
-               if (image.getId() == imageResponses.get(0).getId())
-                  continue;
-
-               SliderImageDto sliderImageData = new SliderImageDto(null, newSlider.getId(),
-                     image.getId(), null,
-                     null);
-               // save slider image
-               this.sliderService.createSliderImage(sliderImageData);
-            }
-
+            newProductSliderEntities.add(data);
          }
+
+         this.productSliderRepository.saveAll(newProductSliderEntities);
+
+         // save slider images
+         List<SliderImage> sliderImageEntities = imageResponses.stream().map(i -> {
+            SliderImage data = new SliderImage();
+
+            data.setImage_id(i.getId());
+            data.setSlider_id(newSliders.get(0).getId());
+
+            return data;
+         }).toList();
 
          // save default combine
          DefaultStorage defaultStorageEntity = new DefaultStorage();
          defaultStorageEntity.setProductId(newProduct.getId());
-         defaultStorageEntity.setStorage_id(newStorages.get(0).getId());
 
-         this.defaultStorageRepository.save(defaultStorageEntity);
+         defaultStorageEntity.setStorage_id(newStorages.get(0).getId());
 
          // save default storage combine
          DefaultStorageCombine defaultStorageCombineEntity = new DefaultStorageCombine();
          defaultStorageCombineEntity.setCombine_id(newCombines.get(0).getId());
          defaultStorageCombineEntity.setStorageId(newStorages.get(0).getId());
 
-         this.defaultStorageCombineRepository.save(defaultStorageCombineEntity);
+         /** Stage 3 */
 
-         Date end = new Date();
+         System.out.println((new Date().getTime() - start.getTime()) / 1000 + "s" + ": Stage 3");
 
-         System.out.println("Import finish after: " + (end.getTime() - start.getTime()) / 1000 + "s");
+         CompletableFuture<List<SliderImage>> sliderImageFuture = CompletableFuture.supplyAsync(() -> {
+            return this.sliderImageRepository.saveAll(sliderImageEntities);
+         });
+
+         CompletableFuture<DefaultStorage> defaultStorageFuture = CompletableFuture.supplyAsync(() -> {
+            return this.defaultStorageRepository.save(defaultStorageEntity);
+         });
+
+         CompletableFuture<DefaultStorageCombine> defaultStorageCombineFuture = CompletableFuture.supplyAsync(() -> {
+            return this.defaultStorageCombineRepository.save(defaultStorageCombineEntity);
+            // return this.defaultStorageRepository.save(defaultStorageEntity);
+         });
+
+         CompletableFuture<Void> stage3Future = CompletableFuture.allOf(sliderImageFuture, defaultStorageFuture,
+               defaultStorageCombineFuture,
+               productAttributeFuture);
+
+         stage3Future.get();
+
+         System.out.println((new Date().getTime() - start.getTime()) / 1000 + "s" + ": Import finish");
 
          return newProduct;
 

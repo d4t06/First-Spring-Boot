@@ -17,7 +17,7 @@ import lombok.Data;
 @Data
 public class SliderImage {
    @Id
-   @GeneratedValue(strategy = GenerationType.IDENTITY)
+   @GeneratedValue(strategy = GenerationType.SEQUENCE)
    private Long id;
 
    private String link_to;
